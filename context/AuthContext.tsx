@@ -2,16 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { cookieStore } from "@/lib/cookies";
-import { authAPI } from "@/lib/api";
+import { authAPI, AuthUser } from "@/lib/api";
 
-interface User {
-  id: number;
-  email: string;
-  personId: number;
-  fullName: string;
-  role: string;
-  status: string;
-}
+type User = AuthUser;
 
 interface AuthContextType {
   user: User | null;
@@ -29,13 +22,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize auth state from cookie
   useEffect(() => {
-    const storedToken = cookieStore.getToken();
-    if (storedToken) {
-      setToken(storedToken);
+    async function initializeAuth() {
+      const storedToken = cookieStore.getToken();
+
+      if (!storedToken) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const profile = await authAPI.profile(storedToken);
+        const fullName = [
+          profile.person.firstName,
+          profile.person.middleName,
+          profile.person.firstLastname,
+          profile.person.secondLastname,
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        setToken(storedToken);
+        setUser({
+          id: profile.id,
+          email: profile.email,
+          personId: profile.person.id,
+          fullName,
+          role: profile.role.name,
+          status: profile.status,
+        });
+      } catch {
+        cookieStore.removeToken();
+        setToken(null);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     }
-    setIsLoading(false);
+
+    void initializeAuth();
   }, []);
 
   const login = async (email: string, password: string) => {

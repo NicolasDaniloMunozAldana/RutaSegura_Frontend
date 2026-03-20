@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #f8fafc;
@@ -37,4 +38,11 @@ body {
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Tailwind preflight can distort Leaflet tiles and controls if images are constrained. */
+.leaflet-container img,
+.leaflet-pane img,
+.leaflet-control img {
+  max-width: none !important;
 }
