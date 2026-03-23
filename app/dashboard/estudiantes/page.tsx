@@ -9,7 +9,13 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { StudentPayload, StudentRecord, studentsAPI } from "@/lib/api";
+import {
+  GuardianRecord,
+  StudentPayload,
+  StudentRecord,
+  guardiansAPI,
+  studentsAPI,
+} from "@/lib/api";
 import type * as Leaflet from "leaflet";
 
 type AddressForm = {
@@ -66,6 +72,19 @@ const initialForm: FormState = {
   documentDescription: "",
   addresses: [{ ...initialAddress }],
 };
+
+const DOCUMENT_TYPES = ["CC", "TI", "CE", "Pasaporte"];
+
+function guardianName(guardian: GuardianRecord): string {
+  return [
+    guardian.firstName,
+    guardian.middleName,
+    guardian.firstLastname,
+    guardian.secondLastname,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
 function mapStudentToForm(student: StudentRecord): FormState {
   const firstDocument = student.personDocumentLinks[0]?.personDocument;
@@ -324,6 +343,7 @@ function statusBadge(status: string) {
 export default function EstudiantesPage() {
   const { token } = useAuth();
   const [students, setStudents] = useState<StudentRecord[]>([]);
+  const [guardians, setGuardians] = useState<GuardianRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -336,6 +356,20 @@ export default function EstudiantesPage() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [mapPicker, setMapPicker] = useState<MapPickerState>({ open: false, addressIndex: null });
+  const [guardianQuery, setGuardianQuery] = useState("");
+
+  const filteredGuardians = useMemo(() => {
+    if (!guardianQuery) {
+      return guardians;
+    }
+
+    const q = guardianQuery.toLowerCase();
+    return guardians.filter((guardian) => {
+      const name = guardianName(guardian).toLowerCase();
+      const email = (guardian.email || "").toLowerCase();
+      return name.includes(q) || email.includes(q) || String(guardian.id).includes(q);
+    });
+  }, [guardians, guardianQuery]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
@@ -369,15 +403,28 @@ export default function EstudiantesPage() {
     }
   }, [token]);
 
+  const loadGuardians = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      const response = await guardiansAPI.findAll(token);
+      setGuardians(response.data);
+    } catch {
+      setGuardians([]);
+    }
+  }, [token]);
+
   useEffect(() => {
     void loadStudents();
-  }, [loadStudents]);
+    void loadGuardians();
+  }, [loadStudents, loadGuardians]);
 
   function openCreateModal() {
     setIsEditMode(false);
     setSelectedId(null);
     setSubmitError(null);
     setForm(initialForm);
+    setGuardianQuery("");
     setIsModalOpen(true);
   }
 
@@ -386,6 +433,8 @@ export default function EstudiantesPage() {
     setSelectedId(student.id);
     setSubmitError(null);
     setForm(mapStudentToForm(student));
+    const selectedGuardian = guardians.find((item) => item.id === student.guardianId);
+    setGuardianQuery(selectedGuardian ? guardianName(selectedGuardian) : "");
     setIsModalOpen(true);
   }
 
@@ -669,15 +718,27 @@ export default function EstudiantesPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Acudiente ID</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Acudiente</label>
                   <input
-                    type="number"
+                    type="text"
+                    value={guardianQuery}
+                    onChange={(e) => setGuardianQuery(e.target.value)}
+                    placeholder="Buscar acudiente por nombre"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 mb-2"
+                  />
+                  <select
                     required
                     value={form.guardianId}
                     onChange={(e) => setForm((prev) => ({ ...prev, guardianId: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
-                    placeholder="Ej: 1"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                  >
+                    <option value="">Seleccionar acudiente...</option>
+                    {filteredGuardians.map((guardian) => (
+                      <option key={guardian.id} value={guardian.id}>
+                        {guardianName(guardian)}{guardian.email ? ` - ${guardian.email}` : ""}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Email</label>
@@ -744,13 +805,17 @@ export default function EstudiantesPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Tipo Documento</label>
-                  <input
-                    type="text"
-                    required
+                  <select
                     value={form.documentType}
                     onChange={(e) => setForm((prev) => ({ ...prev, documentType: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
-                  />
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                  >
+                    {DOCUMENT_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Número Documento</label>

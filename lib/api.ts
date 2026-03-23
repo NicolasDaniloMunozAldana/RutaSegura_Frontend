@@ -10,6 +10,17 @@ interface ApiEnvelope<T> {
   data: T;
 }
 
+export interface GuardianRecord {
+  id: number;
+  firstName: string;
+  middleName: string | null;
+  firstLastname: string;
+  secondLastname: string | null;
+  email: string | null;
+  phone: string | null;
+  status: string | null;
+}
+
 export interface AuthUser {
   id: number;
   email: string;
@@ -181,5 +192,12 @@ export const studentsAPI = {
       method: "DELETE",
       token,
     }) as Promise<ApiEnvelope<StudentRecord>>,
+};
+
+export const guardiansAPI = {
+  findAll: (token: string, query?: string) =>
+    apiCall(`/guardians${query ? `?q=${encodeURIComponent(query)}` : ""}`, {
+      token,
+    }) as Promise<ApiEnvelope<GuardianRecord[]>>,
 };
 
