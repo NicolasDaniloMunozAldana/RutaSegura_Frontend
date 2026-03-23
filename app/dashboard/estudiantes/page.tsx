@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
 import {
   GuardianRecord,
@@ -392,6 +393,63 @@ function isStudentActive(status: string | null | undefined) {
   return status?.toLowerCase() === "active";
 }
 
+async function confirmDialog(options: {
+  title: string;
+  text: string;
+  confirmButtonText: string;
+  confirmButtonColor: string;
+}) {
+  const result = await Swal.fire({
+    title: options.title,
+    text: options.text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: options.confirmButtonText,
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: options.confirmButtonColor,
+    cancelButtonColor: "#64748b",
+    reverseButtons: true,
+    focusCancel: true,
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-slate-800",
+      htmlContainer: "text-slate-600",
+    },
+  });
+
+  return result.isConfirmed;
+}
+
+function showErrorDialog(message: string) {
+  void Swal.fire({
+    title: "Ocurrió un problema",
+    text: message,
+    icon: "error",
+    confirmButtonText: "Entendido",
+    confirmButtonColor: "#0F2B4B",
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-slate-800",
+      htmlContainer: "text-slate-600",
+    },
+  });
+}
+
+function showSuccessDialog(message: string) {
+  void Swal.fire({
+    title: "Operación exitosa",
+    text: message,
+    icon: "success",
+    timer: 1600,
+    showConfirmButton: false,
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-slate-800",
+      htmlContainer: "text-slate-600",
+    },
+  });
+}
+
 export default function EstudiantesPage() {
   const { token } = useAuth();
   const [students, setStudents] = useState<StudentRecord[]>([]);
@@ -599,8 +657,10 @@ export default function EstudiantesPage() {
 
       if (isEditMode && selectedId) {
         await studentsAPI.update(selectedId, payload, token);
+        showSuccessDialog("Estudiante actualizado correctamente.");
       } else {
         await studentsAPI.create(payload, token);
+        showSuccessDialog("Estudiante registrado correctamente.");
       }
 
       await loadStudents();
@@ -615,29 +675,41 @@ export default function EstudiantesPage() {
 
   async function handleInactivate(studentId: number) {
     if (!token) return;
-    const confirmed = window.confirm("Esta acción inactivará el estudiante. ¿Deseas continuar?");
+    const confirmed = await confirmDialog({
+      title: "¿Inactivar estudiante?",
+      text: "Esta acción inactivará el estudiante y limitará su uso en el sistema.",
+      confirmButtonText: "Sí, inactivar",
+      confirmButtonColor: "#dc2626",
+    });
     if (!confirmed) return;
 
     try {
       await studentsAPI.inactivate(studentId, token);
       await loadStudents();
+      showSuccessDialog("Estudiante inactivado correctamente.");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "No se pudo inactivar el estudiante";
-      window.alert(message);
+      showErrorDialog(message);
     }
   }
 
   async function handleActivate(studentId: number) {
     if (!token) return;
-    const confirmed = window.confirm("Esta acción habilitará nuevamente el estudiante. ¿Deseas continuar?");
+    const confirmed = await confirmDialog({
+      title: "¿Habilitar estudiante?",
+      text: "Esta acción permitirá nuevamente el uso del estudiante en el sistema.",
+      confirmButtonText: "Sí, habilitar",
+      confirmButtonColor: "#059669",
+    });
     if (!confirmed) return;
 
     try {
       await studentsAPI.activate(studentId, token);
       await loadStudents();
+      showSuccessDialog("Estudiante habilitado correctamente.");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "No se pudo habilitar el estudiante";
-      window.alert(message);
+      showErrorDialog(message);
     }
   }
 
