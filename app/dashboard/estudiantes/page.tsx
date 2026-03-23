@@ -650,9 +650,9 @@ export default function EstudiantesPage() {
         </div>
         <button
           onClick={openCreateModal}
-          className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95"
+          className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[18px]">add</span>
+          <span className="material-symbols-outlined text-[18px] cursor-pointer">add</span>
           Registrar Estudiante
         </button>
       </div>
@@ -739,7 +739,7 @@ export default function EstudiantesPage() {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => openEditModal(student)}
-                        className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors cursor-pointer"
                         title="Editar"
                       >
                         <span className="material-symbols-outlined text-[16px]">edit</span>
@@ -747,7 +747,7 @@ export default function EstudiantesPage() {
                       {isStudentActive(student.status) ? (
                         <button
                           onClick={() => handleInactivate(student.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-slate-400 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-slate-400 transition-colors cursor-pointer"
                           title="Inactivar"
                         >
                           <span className="material-symbols-outlined text-[16px]">block</span>
@@ -755,7 +755,7 @@ export default function EstudiantesPage() {
                       ) : (
                         <button
                           onClick={() => handleActivate(student.id)}
-                          className="p-1.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 text-slate-400 transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 text-slate-400 transition-colors cursor-pointer"
                           title="Habilitar"
                         >
                           <span className="material-symbols-outlined text-[16px]">check_circle</span>
