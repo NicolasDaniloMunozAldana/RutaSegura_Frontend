@@ -482,16 +482,20 @@ export default function EstudiantesPage() {
   }, [guardians, guardianQuery]);
 
   const filteredStudents = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
     return students.filter((student) => {
       const name = fullName(student).toLowerCase();
       const idText = String(student.id);
+      const email = (student.email ?? "").toLowerCase();
+      const status = (student.status ?? "").toLowerCase();
       const searchPass =
-        !query ||
-        name.includes(query.toLowerCase()) ||
-        idText.includes(query.toLowerCase()) ||
-        student.email.toLowerCase().includes(query.toLowerCase());
+        !normalizedQuery ||
+        name.includes(normalizedQuery) ||
+        idText.includes(normalizedQuery) ||
+        email.includes(normalizedQuery);
 
-      const statusPass = !statusFilter || student.status?.toLowerCase() === statusFilter;
+      const statusPass = !statusFilter || status === statusFilter;
 
       return searchPass && statusPass;
     });
@@ -738,7 +742,7 @@ export default function EstudiantesPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nombre o ID..."
+            placeholder="Buscar por nombre"
             className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
           />
         </div>
