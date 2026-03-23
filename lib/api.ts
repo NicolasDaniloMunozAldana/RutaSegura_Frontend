@@ -64,6 +64,10 @@ export interface StudentAddress {
     latitude: number;
     longitude: number;
     status: string;
+    zone?: {
+      id: number;
+      name: string;
+    } | null;
   };
 }
 
@@ -94,6 +98,7 @@ export interface StudentRecord {
     firstName: string;
     firstLastname: string;
     email: string;
+    phone: string | null;
   } | null;
   personAddresses: StudentAddress[];
   personDocumentLinks: StudentDocumentLink[];
@@ -191,6 +196,13 @@ export const studentsAPI = {
     apiCall(`/students/${id}`, {
       method: "DELETE",
       token,
+    }) as Promise<ApiEnvelope<StudentRecord>>,
+
+  activate: (id: number, token: string) =>
+    apiCall(`/students/${id}`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify({ status: "ACTIVE" }),
     }) as Promise<ApiEnvelope<StudentRecord>>,
 };
 

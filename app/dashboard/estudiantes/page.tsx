@@ -48,6 +48,21 @@ type LatLng = {
   lng: number;
 };
 
+type NominatimAddress = {
+  road?: string;
+  house_number?: string;
+  neighbourhood?: string;
+  suburb?: string;
+  city?: string;
+  town?: string;
+  village?: string;
+};
+
+type NominatimReverseResponse = {
+  display_name?: string;
+  address?: NominatimAddress;
+};
+
 const TUNJA_CENTER: LatLng = {
   lat: 5.53528,
   lng: -73.36778,
@@ -75,6 +90,13 @@ const initialForm: FormState = {
 
 const DOCUMENT_TYPES = ["CC", "TI", "CE", "Pasaporte"];
 
+function normalizeAddressText(value: string): string {
+  return value
+    .replace(/\s*-\s*Zona\s+(Norte|Centro|Sur)\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function guardianName(guardian: GuardianRecord): string {
   return [
     guardian.firstName,
@@ -91,7 +113,7 @@ function mapStudentToForm(student: StudentRecord): FormState {
   const mappedAddresses: AddressForm[] =
     student.personAddresses.length > 0
       ? student.personAddresses.map((item) => ({
-          address: item.address.address ?? "",
+          address: normalizeAddressText(item.address.address ?? ""),
           latitude: String(item.address.latitude ?? ""),
           longitude: String(item.address.longitude ?? ""),
         }))
@@ -129,7 +151,7 @@ function toPayload(form: FormState): StudentPayload {
       documentRole: "student",
     },
     addresses: form.addresses.map((item) => ({
-      address: item.address.trim(),
+      address: normalizeAddressText(item.address),
       latitude: Number(item.latitude),
       longitude: Number(item.longitude),
     })),
@@ -141,12 +163,38 @@ function firstAddressLabel(student: StudentRecord): string {
     return "Sin dirección";
   }
 
-  const first = student.personAddresses[0].address.address;
+  const firstAddress = student.personAddresses[0].address;
+  const first = normalizeAddressText(firstAddress.address);
+  const zoneName = firstAddress.zone?.name?.trim();
+  const containsZone = zoneName
+    ? first.toLowerCase().includes(zoneName.toLowerCase())
+    : false;
+  const formattedFirst = zoneName && !containsZone ? `${first} - ${zoneName}` : first;
+
   if (student.personAddresses.length === 1) {
-    return first;
+    return formattedFirst;
   }
 
-  return `${first} (+${student.personAddresses.length - 1})`;
+  return `${formattedFirst} (+${student.personAddresses.length - 1})`;
+}
+
+function formatAddressFromReverseGeocode(data: NominatimReverseResponse): string | null {
+  const address = data.address;
+
+  const road = address?.road?.trim();
+  const houseNumber = address?.house_number?.trim();
+  const city =
+    address?.city?.trim() ||
+    address?.town?.trim() ||
+    address?.village?.trim() ||
+    "Tunja";
+
+  const street = [road, houseNumber].filter(Boolean).join(" ").trim();
+
+  const base = street ? `${street}, ${city}` : city;
+  if (!base) return null;
+
+  return normalizeAddressText(base);
 }
 
 function getInitialMapPoint(address: AddressForm | undefined): LatLng | null {
@@ -340,6 +388,10 @@ function statusBadge(status: string) {
   );
 }
 
+function isStudentActive(status: string | null | undefined) {
+  return status?.toLowerCase() === "active";
+}
+
 export default function EstudiantesPage() {
   const { token } = useAuth();
   const [students, setStudents] = useState<StudentRecord[]>([]);
@@ -481,14 +533,14 @@ export default function EstudiantesPage() {
   async function reverseGeocode(point: LatLng): Promise<string | null> {
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${point.lat}&lon=${point.lng}`,
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=${point.lat}&lon=${point.lng}`,
       );
       if (!response.ok) {
         return null;
       }
 
-      const data = (await response.json()) as { display_name?: string };
-      return data.display_name ?? null;
+      const data = (await response.json()) as NominatimReverseResponse;
+      return formatAddressFromReverseGeocode(data) ?? data.display_name ?? null;
     } catch {
       return null;
     }
@@ -513,7 +565,7 @@ export default function EstudiantesPage() {
           ...item,
           latitude: point.lat.toFixed(7),
           longitude: point.lng.toFixed(7),
-          address: item.address || addressFromMap || item.address,
+          address: addressFromMap ? normalizeAddressText(addressFromMap) : item.address,
         };
       }),
     }));
@@ -575,6 +627,20 @@ export default function EstudiantesPage() {
     }
   }
 
+  async function handleActivate(studentId: number) {
+    if (!token) return;
+    const confirmed = window.confirm("Esta acción habilitará nuevamente el estudiante. ¿Deseas continuar?");
+    if (!confirmed) return;
+
+    try {
+      await studentsAPI.activate(studentId, token);
+      await loadStudents();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "No se pudo habilitar el estudiante";
+      window.alert(message);
+    }
+  }
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
@@ -620,10 +686,10 @@ export default function EstudiantesPage() {
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200">
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre</th>
-              <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Dirección</th>
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</th>
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Acudiente</th>
+              <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Tel. Acudiente</th>
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
               <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
             </tr>
@@ -658,7 +724,6 @@ export default function EstudiantesPage() {
               filteredStudents.map((student) => (
                 <tr key={student.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-5 py-3 text-sm font-medium text-slate-800">{fullName(student)}</td>
-                  <td className="px-5 py-3 text-xs font-mono text-slate-600">#{student.id}</td>
                   <td className="px-5 py-3 text-sm text-slate-500">
                     {firstAddressLabel(student)}
                   </td>
@@ -668,6 +733,7 @@ export default function EstudiantesPage() {
                       ? `${student.guardian.firstName} ${student.guardian.firstLastname}`
                       : "Sin acudiente"}
                   </td>
+                  <td className="px-5 py-3 text-sm text-slate-600">{student.guardian?.phone ?? "Sin teléfono"}</td>
                   <td className="px-5 py-3">{statusBadge(student.status)}</td>
                   <td className="px-5 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -678,13 +744,23 @@ export default function EstudiantesPage() {
                       >
                         <span className="material-symbols-outlined text-[16px]">edit</span>
                       </button>
-                      <button
-                        onClick={() => handleInactivate(student.id)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-slate-400 transition-colors"
-                        title="Inactivar"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">block</span>
-                      </button>
+                      {isStudentActive(student.status) ? (
+                        <button
+                          onClick={() => handleInactivate(student.id)}
+                          className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-slate-400 transition-colors"
+                          title="Inactivar"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">block</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleActivate(student.id)}
+                          className="p-1.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 text-slate-400 transition-colors"
+                          title="Habilitar"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -735,13 +811,13 @@ export default function EstudiantesPage() {
                     <option value="">Seleccionar acudiente...</option>
                     {filteredGuardians.map((guardian) => (
                       <option key={guardian.id} value={guardian.id}>
-                        {guardianName(guardian)}{guardian.email ? ` - ${guardian.email}` : ""}
+                        {guardianName(guardian)}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Email</label>
+                  <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Email del Estudiante</label>
                   <input
                     type="email"
                     required
