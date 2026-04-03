@@ -4,15 +4,37 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+type ProtectedRouteProps = {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+};
+
+export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRouteProps) {
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const router = useRouter();
 
+  const normalizedAllowedRoles = allowedRoles
+    .map((role) => role.trim().toLowerCase())
+    .filter(Boolean);
+  const userRole = user?.role?.trim().toLowerCase() ?? "";
+  const hasAllowedRole =
+    normalizedAllowedRoles.length === 0 || normalizedAllowedRoles.includes(userRole);
+
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push("/");
+      return;
+    }
+
+    if (!hasAllowedRole) {
+      logout();
       router.push("/");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [hasAllowedRole, isAuthenticated, isLoading, logout, router]);
 
   if (isLoading) {
     return (
@@ -22,7 +44,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !hasAllowedRole) {
     return null;
   }
 

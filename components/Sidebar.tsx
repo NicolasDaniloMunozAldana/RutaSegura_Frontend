@@ -15,6 +15,11 @@ const menuItems = [
     href: "/dashboard/estudiantes",
     icon: "groups",
   },
+  {
+    label: "Acudientes",
+    href: "/dashboard/acudientes",
+    icon: "badge",
+  },
 ];
 
 export default function Sidebar() {

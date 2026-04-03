@@ -12,6 +12,7 @@ interface ApiEnvelope<T> {
 
 export interface GuardianRecord {
   id: number;
+  documentId?: number;
   firstName: string;
   middleName: string | null;
   firstLastname: string;
@@ -19,6 +20,29 @@ export interface GuardianRecord {
   email: string | null;
   phone: string | null;
   status: string | null;
+  createdAt?: string;
+  document?: {
+    id: number;
+    documentType: string;
+    documentNumber: string;
+    description: string | null;
+    status: string | null;
+  } | null;
+}
+
+export interface GuardianPayload {
+  firstName: string;
+  middleName?: string;
+  firstLastname: string;
+  secondLastname?: string;
+  phone?: string;
+  email: string;
+  document: {
+    documentType: string;
+    documentNumber: string;
+    description?: string;
+  };
+  status?: string;
 }
 
 export interface AuthUser {
@@ -211,5 +235,37 @@ export const guardiansAPI = {
     apiCall(`/guardians${query ? `?q=${encodeURIComponent(query)}` : ""}`, {
       token,
     }) as Promise<ApiEnvelope<GuardianRecord[]>>,
+
+  findOne: (id: number, token: string) =>
+    apiCall(`/guardians/${id}`, {
+      token,
+    }) as Promise<ApiEnvelope<GuardianRecord>>,
+
+  create: (payload: GuardianPayload, token: string) =>
+    apiCall("/guardians", {
+      method: "POST",
+      token,
+      body: JSON.stringify(payload),
+    }) as Promise<ApiEnvelope<GuardianRecord>>,
+
+  update: (id: number, payload: Partial<GuardianPayload>, token: string) =>
+    apiCall(`/guardians/${id}`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(payload),
+    }) as Promise<ApiEnvelope<GuardianRecord>>,
+
+  inactivate: (id: number, token: string) =>
+    apiCall(`/guardians/${id}`, {
+      method: "DELETE",
+      token,
+    }) as Promise<ApiEnvelope<GuardianRecord>>,
+
+  activate: (id: number, token: string) =>
+    apiCall(`/guardians/${id}`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify({ status: "ACTIVE" }),
+    }) as Promise<ApiEnvelope<GuardianRecord>>,
 };
 
