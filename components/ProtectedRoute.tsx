@@ -7,10 +7,15 @@ import { useEffect } from "react";
 type ProtectedRouteProps = {
   children: React.ReactNode;
   allowedRoles?: string[];
+  redirectTo?: string;
 };
 
-export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, logout, user } = useAuth();
+export function ProtectedRoute({
+  children,
+  allowedRoles = [],
+  redirectTo = "/",
+}: ProtectedRouteProps) {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
 
   const normalizedAllowedRoles = allowedRoles
@@ -31,10 +36,9 @@ export function ProtectedRoute({ children, allowedRoles = [] }: ProtectedRoutePr
     }
 
     if (!hasAllowedRole) {
-      logout();
-      router.push("/");
+      router.push(redirectTo);
     }
-  }, [hasAllowedRole, isAuthenticated, isLoading, logout, router]);
+  }, [hasAllowedRole, isAuthenticated, isLoading, redirectTo, router]);
 
   if (isLoading) {
     return (
