@@ -1,0 +1,42 @@
+export interface UserRole {
+  id: number;
+  name: string;
+}
+
+export interface UserPerson {
+  id: number;
+  personType: string;
+  firstName: string;
+  middleName: string | null;
+  firstLastname: string;
+  secondLastname: string | null;
+  email: string | null;
+  status: string | null;
+}
+
+export interface UserRecord {
+  id: number;
+  email: string;
+  status: string | null;
+  pickupEnabled: boolean;
+  createdAt: string;
+  role: UserRole;
+  person: UserPerson;
+}
+
+export interface UserPayload {
+  email: string;
+  password: string;
+  personId: number;
+  roleId: number;
+  pickupEnabled?: boolean;
+}
+
+export interface UpdateUserPayload {
+  email?: string;
+  password?: string;
+  personId?: number;
+  roleId?: number;
+  pickupEnabled?: boolean;
+  status?: string;
+}

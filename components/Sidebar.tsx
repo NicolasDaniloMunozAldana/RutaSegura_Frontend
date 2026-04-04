@@ -4,23 +4,38 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
-const menuItems = [
-  {
-    label: "Panel de Control",
-    href: "/dashboard",
-    icon: "dashboard",
-  },
-  {
-    label: "Estudiantes",
-    href: "/dashboard/estudiantes",
-    icon: "groups",
-  },
-];
-
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout, user } = useAuth();
+  const userRole = user?.role?.trim().toLowerCase() ?? "";
+
+  const menuItems = [
+    {
+      label: "Panel de Control",
+      href: "/dashboard",
+      icon: "dashboard",
+    },
+    {
+      label: "Estudiantes",
+      href: "/dashboard/estudiantes",
+      icon: "groups",
+    },
+    {
+      label: "Acudientes",
+      href: "/dashboard/acudientes",
+      icon: "badge",
+    },
+    ...(userRole === "admin"
+      ? [
+          {
+            label: "Usuarios",
+            href: "/dashboard/usuarios",
+            icon: "manage_accounts",
+          },
+        ]
+      : []),
+  ];
 
   const handleLogout = () => {
     logout();
