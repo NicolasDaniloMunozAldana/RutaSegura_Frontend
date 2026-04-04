@@ -13,19 +13,47 @@ import {
   usersAPI,
 } from "@/lib/api";
 
+type UserOption = "DRIVER" | "COORDINATOR" | "ADMIN";
+
 type FormState = {
   email: string;
   password: string;
   personId: string;
-  roleId: string;
+  userOption: UserOption | "";
   pickupEnabled: boolean;
 };
+
+const USER_OPTIONS: Array<{
+  value: UserOption;
+  label: string;
+  personType: "DRIVER" | "COORDINATOR";
+  roleName: "DRIVER" | "COORDINATOR" | "ADMIN";
+}> = [
+  {
+    value: "DRIVER",
+    label: "Conductor",
+    personType: "DRIVER",
+    roleName: "DRIVER",
+  },
+  {
+    value: "COORDINATOR",
+    label: "Coordinador",
+    personType: "COORDINATOR",
+    roleName: "COORDINATOR",
+  },
+  {
+    value: "ADMIN",
+    label: "Administrador",
+    personType: "COORDINATOR",
+    roleName: "ADMIN",
+  },
+];
 
 const initialForm: FormState = {
   email: "",
   password: "",
   personId: "",
-  roleId: "",
+  userOption: "",
   pickupEnabled: false,
 };
 
@@ -66,26 +94,71 @@ function isUserActive(status: string | null | undefined) {
   return status?.toLowerCase() === "active";
 }
 
-function roleLabel(roleName: string | null | undefined): string {
-  return roleName ? roleName.toUpperCase() : "SIN ROL";
+function labelFromRoleName(roleName: string | null | undefined): string {
+  const normalizedRole = (roleName ?? "").toUpperCase();
+  switch (normalizedRole) {
+    case "DRIVER":
+      return "Conductor";
+    case "COORDINATOR":
+      return "Coordinador";
+    case "ADMIN":
+      return "Administrador";
+    default:
+      return "Sin tipo";
+  }
 }
 
-function toCreatePayload(form: FormState): UserPayload {
+function inferUserOptionFromRecord(user: UserRecord): UserOption {
+  const role = (user.role.name ?? "").toUpperCase();
+
+  if (role === "ADMIN") {
+    return "ADMIN";
+  }
+
+  if (role === "DRIVER") {
+    return "DRIVER";
+  }
+
+  return "COORDINATOR";
+}
+
+function findRoleIdByOption(option: UserOption, roles: UserRole[]) {
+  const config = USER_OPTIONS.find((item) => item.value === option);
+  if (!config) return null;
+
+  const role = roles.find(
+    (item) => item.name.trim().toUpperCase() === config.roleName,
+  );
+
+  return role?.id ?? null;
+}
+
+function requiresPickup(option: UserOption | "") {
+  return option === "DRIVER";
+}
+
+function createPayloadFromForm(
+  form: FormState,
+  roleId: number,
+): UserPayload {
   return {
     email: form.email.trim(),
     password: form.password,
     personId: Number(form.personId),
-    roleId: Number(form.roleId),
-    pickupEnabled: form.pickupEnabled,
+    roleId,
+    pickupEnabled: requiresPickup(form.userOption) ? form.pickupEnabled : false,
   };
 }
 
-function toUpdatePayload(form: FormState): UpdateUserPayload {
+function updatePayloadFromForm(
+  form: FormState,
+  roleId: number,
+): UpdateUserPayload {
   const payload: UpdateUserPayload = {
     email: form.email.trim(),
     personId: Number(form.personId),
-    roleId: Number(form.roleId),
-    pickupEnabled: form.pickupEnabled,
+    roleId,
+    pickupEnabled: requiresPickup(form.userOption) ? form.pickupEnabled : false,
   };
 
   if (form.password.trim()) {
@@ -170,7 +243,12 @@ export default function UsuariosPage() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const personOptions = useMemo(() => {
+  const selectedOptionConfig = useMemo(
+    () => USER_OPTIONS.find((item) => item.value === form.userOption) ?? null,
+    [form.userOption],
+  );
+
+  const allPersonOptions = useMemo(() => {
     if (!isEditMode || !selectedUser) {
       return availablePersons;
     }
@@ -186,6 +264,32 @@ export default function UsuariosPage() {
     return [selectedUser.person, ...availablePersons];
   }, [availablePersons, isEditMode, selectedUser]);
 
+  const personOptions = useMemo(() => {
+    if (!selectedOptionConfig) {
+      return allPersonOptions;
+    }
+
+    return allPersonOptions.filter(
+      (person) =>
+        (person.personType ?? "").trim().toUpperCase() ===
+        selectedOptionConfig.personType,
+    );
+  }, [allPersonOptions, selectedOptionConfig]);
+
+  useEffect(() => {
+    if (!form.personId || !selectedOptionConfig) {
+      return;
+    }
+
+    const exists = personOptions.some(
+      (person) => person.id === Number(form.personId),
+    );
+
+    if (!exists) {
+      setForm((prev) => ({ ...prev, personId: "" }));
+    }
+  }, [form.personId, personOptions, selectedOptionConfig]);
+
   const filteredUsers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
@@ -193,7 +297,7 @@ export default function UsuariosPage() {
       const name = personName(user.person).toLowerCase();
       const idText = String(user.id);
       const email = user.email.toLowerCase();
-      const role = (user.role.name ?? "").toLowerCase();
+      const roleLabel = labelFromRoleName(user.role.name).toLowerCase();
       const status = (user.status ?? "").toLowerCase();
 
       const searchPass =
@@ -201,7 +305,7 @@ export default function UsuariosPage() {
         name.includes(normalizedQuery) ||
         idText.includes(normalizedQuery) ||
         email.includes(normalizedQuery) ||
-        role.includes(normalizedQuery);
+        roleLabel.includes(normalizedQuery);
 
       const statusPass = !statusFilter || status === statusFilter;
 
@@ -257,6 +361,8 @@ export default function UsuariosPage() {
   }
 
   function openEditModal(user: UserRecord) {
+    const option = inferUserOptionFromRecord(user);
+
     setIsEditMode(true);
     setSelectedId(user.id);
     setSelectedUser(user);
@@ -265,8 +371,8 @@ export default function UsuariosPage() {
       email: user.email,
       password: "",
       personId: String(user.person.id),
-      roleId: String(user.role.id),
-      pickupEnabled: user.pickupEnabled,
+      userOption: option,
+      pickupEnabled: option === "DRIVER" ? user.pickupEnabled : false,
     });
     setIsModalOpen(true);
   }
@@ -288,8 +394,13 @@ export default function UsuariosPage() {
       setSubmitLoading(true);
       setSubmitError(null);
 
-      if (!form.personId || !form.roleId) {
-        setSubmitError("Selecciona una persona y un rol para continuar.");
+      if (!form.userOption) {
+        setSubmitError("Selecciona el tipo de usuario.");
+        return;
+      }
+
+      if (!form.personId) {
+        setSubmitError("Selecciona una persona para continuar.");
         return;
       }
 
@@ -298,12 +409,30 @@ export default function UsuariosPage() {
         return;
       }
 
+      const roleId = findRoleIdByOption(form.userOption, roles);
+      if (!roleId) {
+        setSubmitError("No fue posible resolver el rol interno para el tipo seleccionado.");
+        return;
+      }
+
+      const selectedPerson = personOptions.find(
+        (person) => person.id === Number(form.personId),
+      );
+
+      if (selectedOptionConfig && selectedPerson) {
+        const personType = (selectedPerson.personType ?? "").toUpperCase();
+        if (personType !== selectedOptionConfig.personType) {
+          setSubmitError("La persona seleccionada no corresponde al tipo de usuario elegido.");
+          return;
+        }
+      }
+
       if (isEditMode && selectedId) {
-        const payload = toUpdatePayload(form);
+        const payload = updatePayloadFromForm(form, roleId);
         await usersAPI.update(selectedId, payload, token);
         showSuccessDialog("Usuario actualizado correctamente.");
       } else {
-        const payload = toCreatePayload(form);
+        const payload = createPayloadFromForm(form, roleId);
         await usersAPI.create(payload, token);
         showSuccessDialog("Usuario creado correctamente.");
       }
@@ -388,7 +517,7 @@ export default function UsuariosPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nombre, correo o rol"
+              placeholder="Buscar por nombre, correo o tipo de usuario"
               className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
             />
           </div>
@@ -409,8 +538,7 @@ export default function UsuariosPage() {
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Correo</th>
                 <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Persona</th>
-                <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Tipo</th>
-                <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Rol</th>
+                <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Tipo de Usuario</th>
                 <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Pickup</th>
                 <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
                 <th className="px-5 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
@@ -419,7 +547,7 @@ export default function UsuariosPage() {
             <tbody className="divide-y divide-slate-100">
               {loading && (
                 <tr>
-                  <td colSpan={7} className="px-5 py-14 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">
                     Cargando usuarios...
                   </td>
                 </tr>
@@ -427,7 +555,7 @@ export default function UsuariosPage() {
 
               {!loading && error && (
                 <tr>
-                  <td colSpan={7} className="px-5 py-14 text-center text-sm text-red-600">
+                  <td colSpan={6} className="px-5 py-14 text-center text-sm text-red-600">
                     {error}
                   </td>
                 </tr>
@@ -435,7 +563,7 @@ export default function UsuariosPage() {
 
               {!loading && !error && filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-5 py-14 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-5 py-14 text-center text-sm text-slate-500">
                     Aún no hay usuarios registrados.
                   </td>
                 </tr>
@@ -447,9 +575,14 @@ export default function UsuariosPage() {
                   <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-5 py-3 text-sm font-medium text-slate-800">{user.email}</td>
                     <td className="px-5 py-3 text-sm text-slate-600">{personName(user.person)}</td>
-                    <td className="px-5 py-3 text-sm text-slate-600">{user.person.personType}</td>
-                    <td className="px-5 py-3 text-sm text-slate-600">{roleLabel(user.role.name)}</td>
-                    <td className="px-5 py-3 text-sm text-slate-600">{user.pickupEnabled ? "Sí" : "No"}</td>
+                    <td className="px-5 py-3 text-sm text-slate-600">{labelFromRoleName(user.role.name)}</td>
+                    <td className="px-5 py-3 text-sm text-slate-600">
+                      {(user.role.name ?? "").toUpperCase() === "DRIVER"
+                        ? user.pickupEnabled
+                          ? "Sí"
+                          : "No"
+                        : "No aplica"}
+                    </td>
                     <td className="px-5 py-3">{statusBadge(user.status)}</td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -537,6 +670,30 @@ export default function UsuariosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Tipo de Usuario</label>
+                    <select
+                      required
+                      value={form.userOption}
+                      onChange={(e) => {
+                        const value = e.target.value as UserOption | "";
+                        setForm((prev) => ({
+                          ...prev,
+                          userOption: value,
+                          personId: "",
+                          pickupEnabled: value === "DRIVER" ? prev.pickupEnabled : false,
+                        }));
+                      }}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    >
+                      <option value="">Seleccionar tipo...</option>
+                      {USER_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Persona asociada</label>
                     <select
                       required
@@ -547,43 +704,30 @@ export default function UsuariosPage() {
                       <option value="">Seleccionar persona...</option>
                       {personOptions.map((person) => (
                         <option key={person.id} value={person.id}>
-                          {personName(person)} ({person.personType})
+                          {personName(person)}
+                          {person.email ? ` - ${person.email}` : ""}
                         </option>
                       ))}
                     </select>
                     <p className="mt-1 text-[11px] text-slate-500">
-                      Solo se listan personas de tipo conductor/coordinador disponibles.
+                      Se muestran solo personas disponibles para el tipo seleccionado.
                     </p>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Rol</label>
-                    <select
-                      required
-                      value={form.roleId}
-                      onChange={(e) => setForm((prev) => ({ ...prev, roleId: e.target.value }))}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
-                    >
-                      <option value="">Seleccionar rol...</option>
-                      {roles.map((role) => (
-                        <option key={role.id} value={role.id}>
-                          {roleLabel(role.name)}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 </div>
 
-                <div>
-                  <label className="inline-flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.pickupEnabled}
-                      onChange={(e) => setForm((prev) => ({ ...prev, pickupEnabled: e.target.checked }))}
-                      className="size-4 rounded border-slate-300 text-[#0F2B4B] focus:ring-[#0F2B4B]/30"
-                    />
-                    <span className="text-sm text-slate-700 font-medium">Pickup habilitado</span>
-                  </label>
-                </div>
+                {requiresPickup(form.userOption) && (
+                  <div>
+                    <label className="inline-flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.pickupEnabled}
+                        onChange={(e) => setForm((prev) => ({ ...prev, pickupEnabled: e.target.checked }))}
+                        className="size-4 rounded border-slate-300 text-[#0F2B4B] focus:ring-[#0F2B4B]/30"
+                      />
+                      <span className="text-sm text-slate-700 font-medium">Pickup habilitado</span>
+                    </label>
+                  </div>
+                )}
 
                 {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}
 
