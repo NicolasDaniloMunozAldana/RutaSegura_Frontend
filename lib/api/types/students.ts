@@ -13,12 +13,17 @@ export interface StudentAddress {
   };
 }
 
+export interface StudentDocumentTypeRecord {
+  id: number;
+  name: string;
+}
+
 export interface StudentDocumentLink {
   id: number;
   documentRole: string;
   personDocument: {
     id: number;
-    documentType: string;
+    documentType: string | StudentDocumentTypeRecord;
     documentNumber: string;
     status: string;
   };

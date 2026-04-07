@@ -1,3 +1,8 @@
+export interface GuardianDocumentTypeRecord {
+  id: number;
+  name: string;
+}
+
 export interface GuardianRecord {
   id: number;
   documentId?: number;
@@ -11,7 +16,7 @@ export interface GuardianRecord {
   createdAt?: string;
   document?: {
     id: number;
-    documentType: string;
+    documentType: string | GuardianDocumentTypeRecord;
     documentNumber: string;
     description: string | null;
     status: string | null;
