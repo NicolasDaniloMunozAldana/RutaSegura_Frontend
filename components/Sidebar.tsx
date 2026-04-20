@@ -26,6 +26,11 @@ export default function Sidebar() {
       href: "/dashboard/acudientes",
       icon: "badge",
     },
+    {
+      label: "Conductores",
+      href: "/dashboard/conductores",
+      icon: "directions_bus",
+    },
     ...(userRole === "admin"
       ? [
           {

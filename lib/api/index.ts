@@ -8,6 +8,7 @@ export type {
   StudentPayload,
   StudentRecord,
 } from "./types/students";
+export type { DriverPayload, DriverRecord } from "./types/drivers";
 export type { GuardianPayload, GuardianRecord } from "./types/guardians";
 export type {
   UpdateUserPayload,
@@ -19,5 +20,6 @@ export type {
 
 export { authAPI } from "./modules/auth";
 export { studentsAPI } from "./modules/students";
+export { driversAPI } from "./modules/drivers";
 export { guardiansAPI } from "./modules/guardians";
 export { usersAPI } from "./modules/users";
