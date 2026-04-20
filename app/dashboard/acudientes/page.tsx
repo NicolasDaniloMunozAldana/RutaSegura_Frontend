@@ -29,7 +29,83 @@ const initialForm: FormState = {
 	documentDescription: "",
 };
 
-const DOCUMENT_TYPES = ["CC", "TI", "CE", "Pasaporte"];
+const DOCUMENT_TYPES = ["CC", "TI", "CE", "PASAPORTE"] as const;
+
+function getDocumentTypeName(documentType: unknown): string {
+	if (typeof documentType === "string") {
+		return documentType;
+	}
+
+	if (
+		typeof documentType === "object" &&
+		documentType !== null &&
+		"name" in documentType &&
+		typeof (documentType as { name?: unknown }).name === "string"
+	) {
+		return (documentType as { name: string }).name;
+	}
+
+	return "";
+}
+
+function getDocumentTypeCode(documentType: unknown): string | null {
+	const normalized = getDocumentTypeName(documentType).trim().toUpperCase();
+
+	if (!normalized) {
+		return null;
+	}
+
+	if (
+		normalized === "CC" ||
+		normalized === "CEDULA" ||
+		normalized === "CEDULA DE CIUDADANIA" ||
+		normalized === "CEDULA_DE_CIUDADANIA"
+	) {
+		return "CC";
+	}
+
+	if (
+		normalized === "TI" ||
+		normalized === "TARJETA IDENTIDAD" ||
+		normalized === "TARJETA DE IDENTIDAD" ||
+		normalized === "TARJETA_IDENTIDAD"
+	) {
+		return "TI";
+	}
+
+	if (
+		normalized === "CE" ||
+		normalized === "CEDULA EXTRANJERIA" ||
+		normalized === "CEDULA DE EXTRANJERIA" ||
+		normalized === "CEDULA_EXTRANJERIA"
+	) {
+		return "CE";
+	}
+
+	if (normalized === "PASAPORTE") {
+		return "PASAPORTE";
+	}
+
+	return null;
+}
+
+function isNumericDocumentType(documentType: string): boolean {
+	return documentType === "CC" || documentType === "TI" || documentType === "CE";
+}
+
+function formatDocumentTypeLabel(documentType: unknown): string {
+	const code = getDocumentTypeCode(documentType);
+
+	if (code === "PASAPORTE") {
+		return "Pasaporte";
+	}
+
+	if (code) {
+		return code;
+	}
+
+	return getDocumentTypeName(documentType);
+}
 
 function fullName(guardian: GuardianRecord): string {
 	return [
@@ -76,13 +152,17 @@ function mapGuardianToForm(guardian: GuardianRecord): FormState {
 		secondLastname: guardian.secondLastname ?? "",
 		phone: guardian.phone ?? "",
 		email: guardian.email ?? "",
-		documentType: guardian.document?.documentType ?? "CC",
+		documentType: getDocumentTypeCode(guardian.document?.documentType) ?? "CC",
 		documentNumber: guardian.document?.documentNumber ?? "",
 		documentDescription: guardian.document?.description ?? "",
 	};
 }
 
 function toPayload(form: FormState): GuardianPayload {
+	const normalizedDocumentNumber = isNumericDocumentType(form.documentType)
+		? form.documentNumber.replace(/\D/g, "")
+		: form.documentNumber;
+
 	return {
 		firstName: form.firstName.trim(),
 		middleName: form.middleName.trim() || undefined,
@@ -92,7 +172,7 @@ function toPayload(form: FormState): GuardianPayload {
 		email: form.email.trim(),
 		document: {
 			documentType: form.documentType.trim(),
-			documentNumber: form.documentNumber.trim(),
+			documentNumber: normalizedDocumentNumber.trim(),
 			description: form.documentDescription.trim() || undefined,
 		},
 	};
@@ -386,7 +466,7 @@ export default function AcudientesPage() {
 									<td className="px-5 py-3 text-sm font-medium text-slate-800">{fullName(guardian)}</td>
 									<td className="px-5 py-3 text-sm text-slate-600">
 										{guardian.document
-											? `${guardian.document.documentType} ${guardian.document.documentNumber}`
+											? `${formatDocumentTypeLabel(guardian.document.documentType)} ${guardian.document.documentNumber}`
 											: "Sin documento"}
 									</td>
 									<td className="px-5 py-3 text-sm text-slate-600">{guardian.email ?? "Sin correo"}</td>
@@ -517,12 +597,23 @@ export default function AcudientesPage() {
 									<label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Tipo Documento</label>
 									<select
 										value={form.documentType}
-										onChange={(e) => setForm((prev) => ({ ...prev, documentType: e.target.value }))}
+										onChange={(e) =>
+											setForm((prev) => {
+												const nextDocumentType = e.target.value;
+												return {
+													...prev,
+													documentType: nextDocumentType,
+													documentNumber: isNumericDocumentType(nextDocumentType)
+														? prev.documentNumber.replace(/\D/g, "")
+														: prev.documentNumber,
+												};
+											})
+										}
 										className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
 									>
 										{DOCUMENT_TYPES.map((type) => (
 											<option key={type} value={type}>
-												{type}
+												{type === "PASAPORTE" ? "Pasaporte" : type}
 											</option>
 										))}
 									</select>
@@ -532,8 +623,17 @@ export default function AcudientesPage() {
 									<input
 										type="text"
 										required
+										inputMode={isNumericDocumentType(form.documentType) ? "numeric" : "text"}
+										pattern={isNumericDocumentType(form.documentType) ? "[0-9]*" : undefined}
 										value={form.documentNumber}
-										onChange={(e) => setForm((prev) => ({ ...prev, documentNumber: e.target.value }))}
+										onChange={(e) =>
+											setForm((prev) => ({
+												...prev,
+												documentNumber: isNumericDocumentType(prev.documentType)
+													? e.target.value.replace(/\D/g, "")
+													: e.target.value,
+											}))
+										}
 										className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
 									/>
 								</div>

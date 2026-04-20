@@ -89,13 +89,75 @@ const initialForm: FormState = {
   addresses: [{ ...initialAddress }],
 };
 
-const DOCUMENT_TYPES = ["CC", "TI", "CE", "Pasaporte"];
+const DOCUMENT_TYPES = ["CC", "TI", "CE", "PASAPORTE"] as const;
 
 function normalizeAddressText(value: string): string {
   return value
     .replace(/\s*-\s*Zona\s+(Norte|Centro|Sur)\b/gi, "")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
+
+function getDocumentTypeName(documentType: unknown): string {
+  if (typeof documentType === "string") {
+    return documentType;
+  }
+
+  if (
+    typeof documentType === "object" &&
+    documentType !== null &&
+    "name" in documentType &&
+    typeof (documentType as { name?: unknown }).name === "string"
+  ) {
+    return (documentType as { name: string }).name;
+  }
+
+  return "";
+}
+
+function getDocumentTypeCode(documentType: unknown): string | null {
+  const normalized = getDocumentTypeName(documentType).trim().toUpperCase();
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (
+    normalized === "CC" ||
+    normalized === "CEDULA" ||
+    normalized === "CEDULA DE CIUDADANIA" ||
+    normalized === "CEDULA_DE_CIUDADANIA"
+  ) {
+    return "CC";
+  }
+
+  if (
+    normalized === "TI" ||
+    normalized === "TARJETA IDENTIDAD" ||
+    normalized === "TARJETA DE IDENTIDAD" ||
+    normalized === "TARJETA_IDENTIDAD"
+  ) {
+    return "TI";
+  }
+
+  if (
+    normalized === "CE" ||
+    normalized === "CEDULA EXTRANJERIA" ||
+    normalized === "CEDULA DE EXTRANJERIA" ||
+    normalized === "CEDULA_EXTRANJERIA"
+  ) {
+    return "CE";
+  }
+
+  if (normalized === "PASAPORTE") {
+    return "PASAPORTE";
+  }
+
+  return null;
+}
+
+function isNumericDocumentType(documentType: string): boolean {
+  return documentType === "CC" || documentType === "TI" || documentType === "CE";
 }
 
 function guardianName(guardian: GuardianRecord): string {
@@ -114,7 +176,7 @@ function mapStudentToForm(student: StudentRecord): FormState {
   const mappedAddresses: AddressForm[] =
     student.personAddresses.length > 0
       ? student.personAddresses.map((item) => ({
-          address: normalizeAddressText(item.address.address ?? ""),
+          address: item.address.address ?? "",
           latitude: String(item.address.latitude ?? ""),
           longitude: String(item.address.longitude ?? ""),
         }))
@@ -128,7 +190,7 @@ function mapStudentToForm(student: StudentRecord): FormState {
     secondLastname: student.secondLastname ?? "",
     phone: student.phone ?? "",
     email: student.email ?? "",
-    documentType: firstDocument?.documentType ?? "CC",
+    documentType: getDocumentTypeCode(firstDocument?.documentType) ?? "CC",
     documentNumber: firstDocument?.documentNumber ?? "",
     documentDescription: "",
     addresses: mappedAddresses,
@@ -136,6 +198,10 @@ function mapStudentToForm(student: StudentRecord): FormState {
 }
 
 function toPayload(form: FormState): StudentPayload {
+  const normalizedDocumentNumber = isNumericDocumentType(form.documentType)
+    ? form.documentNumber.replace(/\D/g, "")
+    : form.documentNumber;
+
   return {
     guardianId: Number(form.guardianId),
     firstName: form.firstName.trim(),
@@ -146,13 +212,13 @@ function toPayload(form: FormState): StudentPayload {
     email: form.email.trim(),
     document: {
       documentType: form.documentType.trim(),
-      documentNumber: form.documentNumber.trim(),
+      documentNumber: normalizedDocumentNumber.trim(),
       description: form.documentDescription.trim() || undefined,
       createPersonDocumentLink: true,
       documentRole: "student",
     },
     addresses: form.addresses.map((item) => ({
-      address: normalizeAddressText(item.address),
+      address: item.address.trim(),
       latitude: Number(item.latitude),
       longitude: Number(item.longitude),
     })),
@@ -959,12 +1025,23 @@ export default function EstudiantesPage() {
                   <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Tipo Documento</label>
                   <select
                     value={form.documentType}
-                    onChange={(e) => setForm((prev) => ({ ...prev, documentType: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((prev) => {
+                        const nextDocumentType = e.target.value;
+                        return {
+                          ...prev,
+                          documentType: nextDocumentType,
+                          documentNumber: isNumericDocumentType(nextDocumentType)
+                            ? prev.documentNumber.replace(/\D/g, "")
+                            : prev.documentNumber,
+                        };
+                      })
+                    }
                     className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
                   >
                     {DOCUMENT_TYPES.map((type) => (
                       <option key={type} value={type}>
-                        {type}
+                        {type === "PASAPORTE" ? "Pasaporte" : type}
                       </option>
                     ))}
                   </select>
@@ -974,8 +1051,17 @@ export default function EstudiantesPage() {
                   <input
                     type="text"
                     required
+                    inputMode={isNumericDocumentType(form.documentType) ? "numeric" : "text"}
+                    pattern={isNumericDocumentType(form.documentType) ? "[0-9]*" : undefined}
                     value={form.documentNumber}
-                    onChange={(e) => setForm((prev) => ({ ...prev, documentNumber: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        documentNumber: isNumericDocumentType(prev.documentType)
+                          ? e.target.value.replace(/\D/g, "")
+                          : e.target.value,
+                      }))
+                    }
                     className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
                   />
                 </div>
