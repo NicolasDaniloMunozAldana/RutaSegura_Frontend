@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RutaSegura – Colegio Villa Fontana</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#0F2B4B",
+          "background-light": "#f8fafc",
+        },
+        fontFamily: { "display": ["Inter", "sans-serif"] },
+        borderRadius: { "DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.625rem", "full": "9999px" },
+      },
+    },
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .screen { display: none; }
+  .screen.active { display: flex; }
+  [data-nav].active { background-color: #0F2B4B; color: #fff; }
+  .badge-green  { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;background:#ecfdf5;color:#047857;border:1px solid #d1fae5; }
+  .badge-blue   { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;background:#eff6ff;color:#1d4ed8;border:1px solid #dbeafe; }
+  .badge-amber  { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;background:#fffbeb;color:#b45309;border:1px solid #fde68a; }
+  .badge-red    { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca; }
+  .badge-slate  { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:0.75rem;font-weight:600;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0; }
+  .doc-ok   { display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#ecfdf5;color:#047857;border:1px solid #d1fae5;text-transform:uppercase;letter-spacing:.05em; }
+  .doc-warn { display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#fffbeb;color:#b45309;border:1px solid #fde68a;text-transform:uppercase;letter-spacing:.05em; }
+  .doc-exp  { display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;text-transform:uppercase;letter-spacing:.05em; }
+  input[type=checkbox] { accent-color: #0F2B4B; }
+  /* modal */
+  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; align-items:center; justify-content:center; }
+  .modal-bg.open { display:flex; }
+</style>
+</head>
+<body class="bg-background-light font-display text-slate-900 min-h-screen">
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="screen-login" class="screen active min-h-screen bg-background-light items-center justify-center flex-col">
+  <div class="bg-white rounded-2xl shadow-xl p-10 w-full max-w-sm border border-slate-200">
+    <div class="flex flex-col items-center mb-8 gap-3">
+      <div class="bg-primary rounded-xl p-3">
+        <span class="material-symbols-outlined text-white text-3xl">directions_bus</span>
+      </div>
+      <div class="text-center">
+        <h1 class="text-primary font-bold text-2xl leading-none">RutaSegura</h1>
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider mt-1">Colegio Villa Fontana</p>
+      </div>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Usuario</label>
+        <input id="login-user" type="text" placeholder="admin" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Contraseña</label>
+        <input id="login-pass" type="password" placeholder="••••" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"/>
+      </div>
+      <p id="login-error" class="text-red-500 text-xs font-medium hidden">Usuario o contraseña incorrectos.</p>
+      <button onclick="doLogin()" class="w-full bg-primary hover:bg-[#163a63] transition-colors text-white font-bold py-2.5 rounded-lg text-sm shadow-md active:scale-95">
+        Iniciar Sesión
+      </button>
+    </div>
+    <p class="text-center text-slate-400 text-[11px] mt-6">Demo: admin / 1234</p>
+  </div>
+</div>
+
+<!-- ══════════════════ APP SHELL ══════════════════ -->
+<div id="screen-app" class="screen min-h-screen h-screen overflow-hidden flex-col">
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0">
+      <div class="p-6 flex items-center gap-3">
+        <div class="bg-primary rounded-lg p-2 flex items-center justify-center text-white">
+          <span class="material-symbols-outlined">directions_bus</span>
+        </div>
+        <div>
+          <h1 class="text-primary font-bold text-xl leading-none">RutaSegura</h1>
+          <p class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Colegio Villa Fontana</p>
+        </div>
+      </div>
+      <nav class="flex-1 px-4 space-y-0.5 mt-2" id="sidebar-nav">
+        <a data-nav="dashboard" onclick="navigate('dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium active">
+          <span class="material-symbols-outlined text-[20px]">dashboard</span><span class="text-sm">Panel de Control</span>
+        </a>
+        <a data-nav="students" onclick="navigate('students')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">groups</span><span class="text-sm">Estudiantes</span>
+        </a>
+        <a data-nav="drivers" onclick="navigate('drivers')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">badge</span><span class="text-sm">Conductores</span>
+        </a>
+        <a data-nav="vehicles" onclick="navigate('vehicles')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">airport_shuttle</span><span class="text-sm">Vehículos</span>
+        </a>
+        <a data-nav="routes" onclick="navigate('routes')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">map</span><span class="text-sm">Rutas</span>
+        </a>
+        <a data-nav="docs" onclick="navigate('docs')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">description</span><span class="text-sm">Documentación</span>
+        </a>
+        <a data-nav="alerts" onclick="navigate('alerts')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium relative">
+          <span class="material-symbols-outlined text-[20px]">notifications_active</span><span class="text-sm">Alertas</span>
+          <span class="absolute right-3 top-3 w-2 h-2 bg-red-500 rounded-full"></span>
+        </a>
+        <a data-nav="checklist" onclick="navigate('checklist')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">checklist</span><span class="text-sm">Lista de Chequeo</span>
+        </a>
+        <a data-nav="reports" onclick="navigate('reports')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors font-medium">
+          <span class="material-symbols-outlined text-[20px]">analytics</span><span class="text-sm">Reportes</span>
+        </a>
+      </nav>
+      <div class="p-4 border-t border-slate-100">
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 cursor-pointer group" onclick="doLogout()">
+          <div class="size-9 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[18px]">person</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold truncate">Admin Usuario</p>
+            <p class="text-xs text-slate-500 truncate">Coordinador</p>
+          </div>
+          <span class="material-symbols-outlined text-slate-400 text-[18px] group-hover:text-red-500 transition-colors">logout</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-light">
+      <!-- Header -->
+      <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between shrink-0">
+        <h2 id="page-title" class="text-slate-800 font-bold text-lg">Panel de Control</h2>
+        <div class="flex items-center gap-4">
+          <div class="relative cursor-pointer" onclick="navigate('alerts')">
+            <span class="material-symbols-outlined text-slate-600 hover:text-primary transition-colors">notifications</span>
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">4</span>
+          </div>
+          <div class="flex items-center gap-2 pl-4 border-l border-slate-200">
+            <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-[18px]">person</span>
+            </div>
+            <span class="text-sm font-semibold text-slate-700">Admin Usuario</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content Panels -->
+      <div class="flex-1 overflow-y-auto" id="content-area">
+
+        <!-- ── DASHBOARD ── -->
+        <div id="panel-dashboard" class="p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="navigate('students')">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><span class="material-symbols-outlined text-[20px]">groups</span></div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Estudiantes</p>
+              </div>
+              <h3 class="text-3xl font-bold text-slate-900">185</h3>
+              <p class="text-xs text-slate-400 mt-1">12 rutas activas</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="navigate('drivers')">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><span class="material-symbols-outlined text-[20px]">badge</span></div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Conductores</p>
+              </div>
+              <h3 class="text-3xl font-bold text-slate-900">8</h3>
+              <p class="text-xs text-slate-400 mt-1">7 activos, 1 inactivo</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="navigate('vehicles')">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-purple-50 text-purple-600 rounded-lg"><span class="material-symbols-outlined text-[20px]">airport_shuttle</span></div>
+                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider">Vehículos</p>
+              </div>
+              <h3 class="text-3xl font-bold text-slate-900">7</h3>
+              <p class="text-xs text-slate-400 mt-1">5 disponibles, 2 en mant.</p>
+            </div>
+            <div class="bg-red-50 p-5 rounded-xl border border-red-100 border-l-4 border-l-red-500 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onclick="navigate('alerts')">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 bg-red-100 text-red-600 rounded-lg"><span class="material-symbols-outlined text-[20px]">report</span></div>
+                <p class="text-red-700/70 text-xs font-semibold uppercase tracking-wider">Alertas</p>
+              </div>
+              <h3 class="text-3xl font-bold text-red-600">4</h3>
+              <p class="text-xs text-red-400 mt-1">2 vencidos, 2 por vencer</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2 space-y-6">
+              <!-- Alertas críticas -->
+              <section>
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-slate-800 font-bold text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-red-500">priority_high</span>Alertas Críticas
+                  </h3>
+                  <button onclick="navigate('alerts')" class="text-primary text-xs font-bold hover:underline">Ver todas</button>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm divide-y divide-slate-100">
+                  <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><span class="material-symbols-outlined">warning</span></div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Licencia – Juan Pérez</p>
+                        <p class="text-xs text-slate-500">Vence en 5 días</p>
+                      </div>
+                    </div>
+                    <button onclick="navigate('docs')" class="border border-slate-200 hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all">Gestionar</button>
+                  </div>
+                  <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div class="bg-red-50 text-red-600 p-2 rounded-lg"><span class="material-symbols-outlined">error</span></div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">SOAT – Buseta ABC-123</p>
+                        <p class="text-xs text-red-500 font-medium">Vencido hace 2 días</p>
+                      </div>
+                    </div>
+                    <button onclick="navigate('docs')" class="border border-slate-200 hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all">Gestionar</button>
+                  </div>
+                  <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div class="bg-yellow-50 text-yellow-600 p-2 rounded-lg"><span class="material-symbols-outlined">warning</span></div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Revisión Técnico-Mecánica – DEF-789</p>
+                        <p class="text-xs text-slate-500">Vence en 12 días</p>
+                      </div>
+                    </div>
+                    <button onclick="navigate('docs')" class="border border-slate-200 hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all">Gestionar</button>
+                  </div>
+                  <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div class="bg-red-50 text-red-600 p-2 rounded-lg"><span class="material-symbols-outlined">error</span></div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Seguro – Buseta GHI-012</p>
+                        <p class="text-xs text-red-500 font-medium">Vencido hace 8 días</p>
+                      </div>
+                    </div>
+                    <button onclick="navigate('docs')" class="border border-slate-200 hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all">Gestionar</button>
+                  </div>
+                </div>
+              </section>
+              <!-- Flota -->
+              <section>
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-slate-800 font-bold text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">playlist_add_check</span>Gestión de Flota &amp; Checklist
+                  </h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div class="bg-white p-5 border border-slate-200 rounded-xl shadow-sm flex flex-col justify-between">
+                    <div class="flex items-start justify-between mb-4">
+                      <div><h4 class="text-sm font-bold text-slate-800">Buseta ABC-123</h4><p class="text-[11px] text-slate-500">Ruta Norte</p></div>
+                      <span class="px-2 py-0.5 bg-amber-50 text-amber-600 text-[10px] font-bold rounded uppercase tracking-wider border border-amber-100">Pendiente</span>
+                    </div>
+                    <div class="space-y-3">
+                      <p class="text-[11px] text-slate-400 italic">Revisión diaria obligatoria</p>
+                      <button onclick="navigate('checklist')" class="w-full bg-primary text-white py-2.5 rounded-lg text-[11px] font-bold hover:bg-[#163a63] transition-colors shadow-sm">Iniciar Revisión</button>
+                    </div>
+                  </div>
+                  <div class="bg-white p-5 border border-slate-200 rounded-xl shadow-sm flex flex-col justify-between">
+                    <div class="flex items-start justify-between mb-4">
+                      <div><h4 class="text-sm font-bold text-slate-800">Buseta XYZ-456</h4><p class="text-[11px] text-slate-500">Ruta Centro</p></div>
+                      <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded uppercase tracking-wider border border-emerald-100">Completado</span>
+                    </div>
+                    <div class="space-y-3">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-emerald-500 text-sm">check_circle</span>
+                        <p class="text-[11px] text-slate-500 font-medium">Finalizado 06:15 AM</p>
+                      </div>
+                      <button onclick="navigate('checklist')" class="w-full bg-white text-slate-600 py-2.5 rounded-lg text-[11px] font-bold border border-slate-200 hover:bg-slate-50 transition-colors">Ver Reporte</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Rutas + Acciones rápidas -->
+            <div class="space-y-6">
+              <section>
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-slate-800 font-bold text-lg">Vista Previa de Rutas</h3>
+                  <button onclick="navigate('routes')" class="text-primary text-xs font-bold hover:underline">Ver todas</button>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                  <div class="h-32 bg-slate-200 relative" style="background:linear-gradient(135deg,#0F2B4B 0%,#1a4a80 60%,#2563eb 100%);">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-white/40 text-7xl">map</span>
+                    </div>
+                    <div class="absolute inset-0 bg-primary/10"></div>
+                  </div>
+                  <div class="p-4 space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50">
+                      <div class="flex items-center gap-3"><div class="w-2 h-8 bg-blue-500 rounded-full"></div>
+                        <div><p class="text-sm font-bold text-slate-800">Ruta Norte</p><p class="text-[11px] text-slate-500">Cond: Juan • 18 Est.</p></div>
+                      </div>
+                      <button onclick="navigate('routes')" class="text-primary hover:bg-primary/5 p-1 rounded-full"><span class="material-symbols-outlined">visibility</span></button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50">
+                      <div class="flex items-center gap-3"><div class="w-2 h-8 bg-green-500 rounded-full"></div>
+                        <div><p class="text-sm font-bold text-slate-800">Ruta Centro</p><p class="text-[11px] text-slate-500">Cond: Carlos • 14 Est.</p></div>
+                      </div>
+                      <button onclick="navigate('routes')" class="text-primary hover:bg-primary/5 p-1 rounded-full"><span class="material-symbols-outlined">visibility</span></button>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-slate-50">
+                      <div class="flex items-center gap-3"><div class="w-2 h-8 bg-orange-500 rounded-full"></div>
+                        <div><p class="text-sm font-bold text-slate-800">Ruta Sur</p><p class="text-[11px] text-slate-500">Cond: María • 16 Est.</p></div>
+                      </div>
+                      <button onclick="navigate('routes')" class="text-primary hover:bg-primary/5 p-1 rounded-full"><span class="material-symbols-outlined">visibility</span></button>
+                    </div>
+                    <button onclick="navigate('routes')" class="w-full py-2.5 bg-primary text-white rounded-lg text-[11px] font-bold shadow-sm hover:opacity-90 transition-opacity">Ver Detalle de Todas las Rutas</button>
+                  </div>
+                </div>
+              </section>
+              <section>
+                <h3 class="text-slate-800 font-bold text-lg mb-4">Acciones Rápidas</h3>
+                <div class="grid grid-cols-2 gap-3">
+                  <button onclick="navigate('students')" class="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-primary hover:bg-slate-50 transition-all group">
+                    <div class="p-2 bg-slate-50 rounded-lg group-hover:bg-primary/5"><span class="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-primary">person_add</span></div>
+                    <span class="text-[11px] font-bold text-slate-700">Nuevo Estudiante</span>
+                  </button>
+                  <button onclick="navigate('drivers')" class="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-primary hover:bg-slate-50 transition-all group">
+                    <div class="p-2 bg-slate-50 rounded-lg group-hover:bg-primary/5"><span class="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-primary">assignment_ind</span></div>
+                    <span class="text-[11px] font-bold text-slate-700">Nuevo Conductor</span>
+                  </button>
+                  <button onclick="navigate('routes')" class="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-primary hover:bg-slate-50 transition-all group">
+                    <div class="p-2 bg-slate-50 rounded-lg group-hover:bg-primary/5"><span class="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-primary">add_road</span></div>
+                    <span class="text-[11px] font-bold text-slate-700">Asignar Ruta</span>
+                  </button>
+                  <button onclick="navigate('reports')" class="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-primary hover:bg-slate-50 transition-all group">
+                    <div class="p-2 bg-slate-50 rounded-lg group-hover:bg-primary/5"><span class="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-primary">print</span></div>
+                    <span class="text-[11px] font-bold text-slate-700">Exportar Reporte</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── STUDENTS ── -->
+        <div id="panel-students" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Gestión de Estudiantes</h3>
+              <p class="text-sm text-slate-500 mt-0.5">185 estudiantes registrados</p>
+            </div>
+            <button onclick="openModal('modal-add-student')" class="bg-primary hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">add</span>Registrar Estudiante
+            </button>
+          </div>
+          <!-- Filters -->
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-6 flex flex-wrap gap-3 items-center">
+            <div class="relative flex-1 min-w-48">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+              <input type="text" placeholder="Buscar por nombre o ID..." oninput="filterStudents(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+            </div>
+            <select class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20" onchange="filterStudentsByRoute(this.value)">
+              <option value="">Todas las Rutas</option>
+              <option>Ruta Norte</option>
+              <option>Ruta Centro</option>
+              <option>Ruta Sur</option>
+              <option>Ruta Este</option>
+            </select>
+            <select class="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20">
+              <option value="">Todos los estados</option>
+              <option>Activo</option>
+              <option>Inactivo</option>
+            </select>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <table class="w-full text-left" id="students-table">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dirección</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ruta</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="students-tbody">
+                <!-- JS-generated -->
+              </tbody>
+            </table>
+            <div class="px-5 py-3 bg-white border-t border-slate-100 text-xs text-slate-500 font-medium">Mostrando 10 de 185 estudiantes</div>
+          </div>
+        </div>
+
+        <!-- ── DRIVERS ── -->
+        <div id="panel-drivers" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Gestión de Conductores</h3>
+              <p class="text-sm text-slate-500 mt-0.5">8 conductores registrados</p>
+            </div>
+            <button onclick="openModal('modal-add-driver')" class="bg-primary hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">add</span>Registrar Conductor
+            </button>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Documento</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Licencia</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Venc. Licencia</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Teléfono</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="drivers-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── VEHICLES ── -->
+        <div id="panel-vehicles" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Gestión de Vehículos</h3>
+              <p class="text-sm text-slate-500 mt-0.5">7 vehículos registrados</p>
+            </div>
+            <button onclick="openModal('modal-add-vehicle')" class="bg-primary hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">add</span>Registrar Vehículo
+            </button>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200">
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Placa</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Marca / Modelo</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Conductor</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Capacidad</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Documentación</th>
+                  <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="vehicles-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── ROUTES ── -->
+        <div id="panel-routes" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Optimización de Rutas</h3>
+              <p class="text-sm text-slate-500 mt-0.5">12 rutas activas • Colegio Villa Fontana</p>
+            </div>
+            <button class="bg-primary hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">add_road</span>Nueva Ruta
+            </button>
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="xl:col-span-1 space-y-3" id="routes-list"></div>
+            <!-- Detail panel -->
+            <div class="xl:col-span-2 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col" id="route-detail">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ── DOCS ── -->
+        <div id="panel-docs" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Control Documental</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Documentos de vehículos y conductores</p>
+            </div>
+          </div>
+          <!-- Tabs -->
+          <div class="flex gap-1 bg-slate-100 p-1 rounded-lg w-fit mb-6">
+            <button id="tab-veh" onclick="switchDocTab('veh')" class="px-5 py-2 rounded-md text-sm font-semibold bg-white text-primary shadow-sm transition-all">Vehículos</button>
+            <button id="tab-cond" onclick="switchDocTab('cond')" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-500 hover:text-slate-700 transition-all">Conductores</button>
+          </div>
+          <div id="docs-veh-panel">
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Vehículo</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">SOAT</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rev. Técnica</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Seguro</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tarjeta Prop.</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="docs-veh-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="docs-cond-panel" class="hidden">
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Conductor</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Cédula</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Licencia</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Cert. Médico</th>
+                    <th class="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="docs-cond-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ALERTS ── -->
+        <div id="panel-alerts" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Sistema de Alertas</h3>
+              <p class="text-sm text-slate-500 mt-0.5">4 alertas activas</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="filterAlerts('all')" id="alert-btn-all" class="px-4 py-2 rounded-lg text-xs font-bold bg-primary text-white transition-all">Todas</button>
+              <button onclick="filterAlerts('exp')" id="alert-btn-exp" class="px-4 py-2 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all">Vencidas</button>
+              <button onclick="filterAlerts('warn')" id="alert-btn-warn" class="px-4 py-2 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all">Por Vencer</button>
+            </div>
+          </div>
+          <div class="space-y-3" id="alerts-list"></div>
+        </div>
+
+        <!-- ── CHECKLIST ── -->
+        <div id="panel-checklist" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Lista de Chequeo Previa al Viaje</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Validación de condiciones del vehículo</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Form -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+              <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">checklist</span>Nueva Revisión</h4>
+              <div class="space-y-4 mb-6">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Vehículo</label>
+                  <select id="checklist-vehicle" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option>ABC-123 – Mercedes Sprinter</option>
+                    <option>XYZ-456 – Nissan Urvan</option>
+                    <option>DEF-789 – Hyundai H1</option>
+                    <option>GHI-012 – Toyota HiAce</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Conductor</label>
+                  <select class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option>Juan Pérez</option>
+                    <option>Carlos Ruiz</option>
+                    <option>María López</option>
+                  </select>
+                </div>
+              </div>
+              <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Ítems de Verificación</p>
+              <div class="space-y-3" id="checklist-items">
+                <!-- generated by JS -->
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100">
+                <button onclick="submitChecklist()" class="w-full bg-primary hover:bg-[#163a63] text-white py-3 rounded-lg font-bold text-sm transition-colors shadow-md">
+                  Completar Revisión y Habilitar Vehículo
+                </button>
+              </div>
+            </div>
+            <!-- Historial -->
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+              <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">history</span>Historial de Chequeos</h4>
+              <div class="space-y-3" id="checklist-history"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── REPORTS ── -->
+        <div id="panel-reports" class="p-8 hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-slate-800">Reportes Administrativos</h3>
+              <p class="text-sm text-slate-500 mt-0.5">Resúmenes y estadísticas del sistema</p>
+            </div>
+            <button class="bg-primary hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95">
+              <span class="material-symbols-outlined text-[18px]">print</span>Exportar PDF
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+              <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-blue-500">groups</span>Estudiantes por Ruta</h4>
+              <div class="space-y-3" id="report-students-routes"></div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+              <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-emerald-500">badge</span>Estado de Conductores</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">Activos</span><span class="font-bold text-emerald-600">7</span></div>
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">Inactivos</span><span class="font-bold text-slate-400">1</span></div>
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">Con lic. por vencer</span><span class="font-bold text-amber-600">2</span></div>
+                <div class="w-full bg-slate-100 rounded-full h-2 mt-2"><div class="bg-emerald-500 h-2 rounded-full" style="width:87.5%"></div></div>
+                <p class="text-xs text-slate-400">87.5% habilitados</p>
+              </div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+              <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-purple-500">airport_shuttle</span>Estado de Vehículos</h4>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">Disponibles</span><span class="font-bold text-emerald-600">4</span></div>
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">En ruta</span><span class="font-bold text-blue-600">1</span></div>
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">En mantenimiento</span><span class="font-bold text-slate-400">2</span></div>
+                <div class="flex justify-between items-center"><span class="text-sm text-slate-600">Docs. vencidos</span><span class="font-bold text-red-600">2</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Historial -->
+          <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+            <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">history</span>Historial de Rutas (últimas 5)</h4>
+            <table class="w-full text-left">
+              <thead><tr class="border-b border-slate-100">
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha</th>
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Ruta</th>
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Vehículo</th>
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Conductor</th>
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estudiantes</th>
+                <th class="pb-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+              </tr></thead>
+              <tbody class="divide-y divide-slate-50 text-sm">
+                <tr class="hover:bg-slate-50"><td class="py-3 pr-4">09/03/2026</td><td class="py-3 pr-4">Ruta Norte</td><td class="py-3 pr-4">ABC-123</td><td class="py-3 pr-4">Juan Pérez</td><td class="py-3 text-center">18</td><td class="py-3"><span class="badge-green"><span class="size-1.5 rounded-full bg-emerald-600"></span>Completado</span></td></tr>
+                <tr class="hover:bg-slate-50"><td class="py-3 pr-4">09/03/2026</td><td class="py-3 pr-4">Ruta Centro</td><td class="py-3 pr-4">XYZ-456</td><td class="py-3 pr-4">Carlos Ruiz</td><td class="py-3 text-center">14</td><td class="py-3"><span class="badge-green"><span class="size-1.5 rounded-full bg-emerald-600"></span>Completado</span></td></tr>
+                <tr class="hover:bg-slate-50"><td class="py-3 pr-4">08/03/2026</td><td class="py-3 pr-4">Ruta Sur</td><td class="py-3 pr-4">DEF-789</td><td class="py-3 pr-4">María López</td><td class="py-3 text-center">16</td><td class="py-3"><span class="badge-green"><span class="size-1.5 rounded-full bg-emerald-600"></span>Completado</span></td></tr>
+                <tr class="hover:bg-slate-50"><td class="py-3 pr-4">08/03/2026</td><td class="py-3 pr-4">Ruta Este</td><td class="py-3 pr-4">JKL-345</td><td class="py-3 pr-4">Andrés Mora</td><td class="py-3 text-center">11</td><td class="py-3"><span class="badge-amber"><span class="size-1.5 rounded-full bg-amber-600"></span>Incidente</span></td></tr>
+                <tr class="hover:bg-slate-50"><td class="py-3 pr-4">07/03/2026</td><td class="py-3 pr-4">Ruta Norte</td><td class="py-3 pr-4">ABC-123</td><td class="py-3 pr-4">Juan Pérez</td><td class="py-3 text-center">18</td><td class="py-3"><span class="badge-green"><span class="size-1.5 rounded-full bg-emerald-600"></span>Completado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /content-area -->
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+<!-- Modal Add Student -->
+<div class="modal-bg" id="modal-add-student">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-bold text-slate-800">Registrar Estudiante</h3>
+      <button onclick="closeModal('modal-add-student')" class="text-slate-400 hover:text-slate-600 transition-colors"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Nombre</label>
+          <input type="text" placeholder="Nombre completo" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Identificación</label>
+          <input type="text" placeholder="N° de ID" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Dirección</label>
+        <input type="text" placeholder="Dirección de residencia" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Teléfono de Contacto</label>
+        <input type="text" placeholder="310 000 0000" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Ruta Asignada</label>
+        <select class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <option value="">Seleccionar ruta...</option>
+          <option>Ruta Norte</option><option>Ruta Centro</option><option>Ruta Sur</option><option>Ruta Este</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeModal('modal-add-student')" class="flex-1 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancelar</button>
+      <button onclick="closeModal('modal-add-student')" class="flex-1 py-2.5 bg-primary hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add Driver -->
+<div class="modal-bg" id="modal-add-driver">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-bold text-slate-800">Registrar Conductor</h3>
+      <button onclick="closeModal('modal-add-driver')" class="text-slate-400 hover:text-slate-600 transition-colors"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Nombre</label>
+          <input type="text" placeholder="Nombre completo" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Documento</label>
+          <input type="text" placeholder="N° Cédula" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">N° Licencia</label>
+          <input type="text" placeholder="AB-12345" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Venc. Licencia</label>
+          <input type="date" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Teléfono</label>
+        <input type="text" placeholder="310 000 0000" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Email</label>
+        <input type="email" placeholder="correo@correo.com" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeModal('modal-add-driver')" class="flex-1 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancelar</button>
+      <button onclick="closeModal('modal-add-driver')" class="flex-1 py-2.5 bg-primary hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Add Vehicle -->
+<div class="modal-bg" id="modal-add-vehicle">
+  <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-bold text-slate-800">Registrar Vehículo</h3>
+      <button onclick="closeModal('modal-add-vehicle')" class="text-slate-400 hover:text-slate-600 transition-colors"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Placa</label>
+          <input type="text" placeholder="ABC-123" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Capacidad</label>
+          <input type="number" placeholder="16" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Marca</label>
+          <input type="text" placeholder="Mercedes-Benz" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Modelo</label>
+          <input type="text" placeholder="Sprinter 2022" class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Conductor Asignado</label>
+        <select class="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <option value="">Sin asignar</option>
+          <option>Juan Pérez</option><option>Carlos Ruiz</option><option>María López</option><option>Luis García</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeModal('modal-add-vehicle')" class="flex-1 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancelar</button>
+      <button onclick="closeModal('modal-add-vehicle')" class="flex-1 py-2.5 bg-primary hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="fixed bottom-6 right-6 bg-primary text-white px-5 py-3 rounded-xl shadow-lg text-sm font-semibold translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+  <span class="material-symbols-outlined text-[18px]">check_circle</span><span id="toast-msg">Acción realizada</span>
+</div>
+
+<!-- ══════════════════ JAVASCRIPT ══════════════════ -->
+<script>
+// ── DATA ──────────────────────────────────────────
+const students = [
+  {id:'VF-001',name:'Sofía Martínez',address:'Cra 15 #45-23, Barrio Norte',phone:'310-234-5678',route:'Ruta Norte',status:'Activo'},
+  {id:'VF-002',name:'Miguel Torres',address:'Cl 80 #12-05, Villa Fontana',phone:'311-987-6543',route:'Ruta Centro',status:'Activo'},
+  {id:'VF-003',name:'Valentina Gómez',address:'Av 30 #67-89, El Remanso',phone:'312-345-6789',route:'Ruta Sur',status:'Activo'},
+  {id:'VF-004',name:'Sebastián Díaz',address:'Cra 22 #33-11, La Floresta',phone:'313-456-7890',route:'Ruta Este',status:'Activo'},
+  {id:'VF-005',name:'Isabella Castro',address:'Cl 55 #8-40, Centro',phone:'314-567-8901',route:'Ruta Norte',status:'Activo'},
+  {id:'VF-006',name:'Samuel Herrera',address:'Cra 7 #20-15, Bello',phone:'315-678-9012',route:'Ruta Sur',status:'Inactivo'},
+  {id:'VF-007',name:'Camila Ríos',address:'Cl 100 #45-22, Comfama',phone:'316-789-0123',route:'Ruta Centro',status:'Activo'},
+  {id:'VF-008',name:'Daniel Vargas',address:'Av 33 #10-55, Itagüí',phone:'317-890-1234',route:'Ruta Norte',status:'Activo'},
+  {id:'VF-009',name:'Mariana López',address:'Cra 50 #2-70, Envigado',phone:'318-901-2345',route:'Ruta Sur',status:'Activo'},
+  {id:'VF-010',name:'Tomás Jiménez',address:'Cl 12 #88-60, Sabaneta',phone:'319-012-3456',route:'Ruta Este',status:'Activo'},
+];
+
+const drivers = [
+  {name:'Juan Pérez',doc:'CC 1.045.678.901',license:'C2-12345',licExp:'14/03/2026',phone:'300-111-2222',email:'juan@rutasegura.com',status:'Activo'},
+  {name:'Carlos Ruiz',doc:'CC 1.032.456.789',license:'C2-23456',licExp:'20/08/2026',phone:'300-222-3333',email:'carlos@rutasegura.com',status:'Activo'},
+  {name:'María López',doc:'CC 52.456.789',license:'B1-34567',licExp:'05/11/2026',phone:'300-333-4444',email:'maria@rutasegura.com',status:'Activo'},
+  {name:'Luis García',doc:'CC 1.077.889.900',license:'C2-45678',licExp:'30/06/2026',phone:'300-444-5555',email:'luis@rutasegura.com',status:'Activo'},
+  {name:'Andrés Mora',doc:'CC 1.012.345.678',license:'C2-56789',licExp:'15/09/2026',phone:'300-555-6666',email:'andres@rutasegura.com',status:'Activo'},
+  {name:'Patricia Silva',doc:'CC 31.234.567',license:'B1-67890',licExp:'01/12/2026',phone:'300-666-7777',email:'patricia@rutasegura.com',status:'Activo'},
+  {name:'Ricardo Gómez',doc:'CC 1.098.765.432',license:'C2-78901',licExp:'10/07/2026',phone:'300-777-8888',email:'ricardo@rutasegura.com',status:'Activo'},
+  {name:'Sandra Torres',doc:'CC 43.789.012',license:'B1-89012',licExp:'28/02/2026',phone:'300-888-9999',email:'sandra@rutasegura.com',status:'Inactivo'},
+];
+
+const vehicles = [
+  {plate:'ABC-123',brand:'Mercedes-Benz',model:'Sprinter',type:'Van',color:'Blanco',capacity:16,driver:'Juan Pérez',status:'En Ruta',doc:'Vencido'},
+  {plate:'XYZ-456',brand:'Nissan',model:'Urvan',type:'Van',color:'Gris Plata',capacity:12,driver:'Carlos Ruiz',status:'Disponible',doc:'Por Vencer'},
+  {plate:'DEF-789',brand:'Hyundai',model:'H1',type:'Minibús',color:'Negro',capacity:9,driver:'María López',status:'Mantenimiento',doc:'Por Vencer'},
+  {plate:'GHI-012',brand:'Toyota',model:'HiAce',type:'Van',color:'Blanco',capacity:14,driver:'Luis García',status:'Disponible',doc:'Vencido'},
+  {plate:'JKL-345',brand:'Ford',model:'Transit',type:'Minibús',color:'Plata',capacity:15,driver:'Andrés Mora',status:'Disponible',doc:'Al Día'},
+  {plate:'MNO-678',brand:'Kia',model:'Carnival',type:'Van',color:'Azul',capacity:10,driver:'Patricia Silva',status:'Disponible',doc:'Al Día'},
+  {plate:'PQR-901',brand:'Fiat',model:'Ducato',type:'Minibús',color:'Blanco',capacity:18,driver:'Ricardo Gómez',status:'Mantenimiento',doc:'Al Día'},
+];
+
+const routes = [
+  {id:1,name:'Ruta Norte',color:'#3b82f6',driver:'Juan Pérez',vehicle:'ABC-123',students:18,stops:['Cra 15 #45-00','Av Suba #120-30','Cl 127 #19-00','Colegio Villa Fontana'],schedule:'6:30 AM / 1:00 PM',status:'Activa'},
+  {id:2,name:'Ruta Centro',color:'#22c55e',driver:'Carlos Ruiz',vehicle:'XYZ-456',students:14,stops:['Cl 80 #12-00','Av El Dorado #68B-00','Diagonal 22 #55-10','Colegio Villa Fontana'],schedule:'6:45 AM / 1:15 PM',status:'Activa'},
+  {id:3,name:'Ruta Sur',color:'#f97316',driver:'María López',vehicle:'DEF-789',students:16,stops:['Cra 22 #33-00','Transv 86 #27A-00','Cl 17 sur #44-20','Colegio Villa Fontana'],schedule:'6:15 AM / 12:45 PM',status:'Activa'},
+  {id:4,name:'Ruta Este',color:'#a855f7',driver:'Andrés Mora',vehicle:'JKL-345',students:11,stops:['Av 1 de Mayo #30-00','Cra 97 #43-00','Cl 6 #82-00','Colegio Villa Fontana'],schedule:'6:20 AM / 1:00 PM',status:'Activa'},
+  {id:5,name:'Ruta Occidental',color:'#e11d48',driver:'Luis García',vehicle:'GHI-012',students:13,stops:['Av Cali #19-00','Cl 13 #111-00','Transv 93 #64A-00','Colegio Villa Fontana'],schedule:'6:40 AM / 1:10 PM',status:'Activa'},
+];
+
+const docsVehicles = [
+  {plate:'ABC-123',brand:'Mercedes Sprinter',soat:{status:'exp',exp:'07/03/2026'},rtm:{status:'ok',exp:'15/09/2026'},seguro:{status:'warn',exp:'20/03/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'XYZ-456',brand:'Nissan Urvan',soat:{status:'warn',exp:'25/03/2026'},rtm:{status:'ok',exp:'30/10/2026'},seguro:{status:'ok',exp:'15/11/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'DEF-789',brand:'Hyundai H1',soat:{status:'ok',exp:'10/12/2026'},rtm:{status:'warn',exp:'21/03/2026'},seguro:{status:'ok',exp:'05/10/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'GHI-012',brand:'Toyota HiAce',soat:{status:'ok',exp:'20/08/2026'},rtm:{status:'ok',exp:'14/07/2026'},seguro:{status:'exp',exp:'01/03/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'JKL-345',brand:'Ford Transit',soat:{status:'ok',exp:'30/11/2026'},rtm:{status:'ok',exp:'22/06/2026'},seguro:{status:'ok',exp:'18/09/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'MNO-678',brand:'Kia Carnival',soat:{status:'ok',exp:'08/10/2026'},rtm:{status:'ok',exp:'11/05/2026'},seguro:{status:'ok',exp:'01/08/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+  {plate:'PQR-901',brand:'Fiat Ducato',soat:{status:'ok',exp:'25/07/2026'},rtm:{status:'ok',exp:'03/04/2026'},seguro:{status:'ok',exp:'12/06/2026'},tarjeta:{status:'ok',exp:'N/A'}},
+];
+
+const docsDrivers = [
+  {name:'Juan Pérez',cedula:{status:'ok',exp:'N/A'},licencia:{status:'warn',exp:'14/03/2026'},medico:{status:'ok',exp:'01/10/2026'}},
+  {name:'Carlos Ruiz',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'20/08/2026'},medico:{status:'ok',exp:'15/11/2026'}},
+  {name:'María López',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'05/11/2026'},medico:{status:'warn',exp:'18/03/2026'}},
+  {name:'Luis García',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'30/06/2026'},medico:{status:'ok',exp:'09/07/2026'}},
+  {name:'Andrés Mora',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'15/09/2026'},medico:{status:'ok',exp:'22/05/2026'}},
+  {name:'Patricia Silva',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'01/12/2026'},medico:{status:'ok',exp:'08/10/2026'}},
+  {name:'Ricardo Gómez',cedula:{status:'ok',exp:'N/A'},licencia:{status:'ok',exp:'10/07/2026'},medico:{status:'ok',exp:'14/08/2026'}},
+  {name:'Sandra Torres',cedula:{status:'ok',exp:'N/A'},licencia:{status:'exp',exp:'28/02/2026'},medico:{status:'exp',exp:'15/01/2026'}},
+];
+
+const allAlerts = [
+  {type:'exp',icon:'error',title:'SOAT vencido – Buseta ABC-123',desc:'Venció el 07/03/2026 (hace 2 días)',entity:'Vehículo',action:'docs'},
+  {type:'exp',icon:'error',title:'Seguro vencido – Toyota GHI-012',desc:'Venció el 01/03/2026 (hace 8 días)',entity:'Vehículo',action:'docs'},
+  {type:'warn',icon:'warning',title:'Licencia de conducción – Juan Pérez',desc:'Vence el 14/03/2026 (en 5 días)',entity:'Conductor',action:'docs'},
+  {type:'warn',icon:'warning',title:'Revisión Técnica – DEF-789',desc:'Vence el 21/03/2026 (en 12 días)',entity:'Vehículo',action:'docs'},
+  {type:'warn',icon:'warning',title:'Certificado médico – María López',desc:'Vence el 18/03/2026 (en 9 días)',entity:'Conductor',action:'docs'},
+  {type:'warn',icon:'warning',title:'SOAT – Nissan XYZ-456',desc:'Vence el 25/03/2026 (en 16 días)',entity:'Vehículo',action:'docs'},
+];
+
+const checklistItems = [
+  'Estado de frenos','Estado de llantas','Luces (delantera/trasera)','Nivel de combustible',
+  'Botiquín de primeros auxilios','Extintor vigente','Cinturones de seguridad',
+  'Niveles de aceite','Líquido refrigerante','Líquido de frenos'
+];
+
+const checklistHistory = [
+  {date:'09/03/2026 06:10',vehicle:'XYZ-456 – Nissan Urvan',driver:'Carlos Ruiz',result:'Aprobado',items:10},
+  {date:'09/03/2026 05:55',vehicle:'ABC-123 – Mercedes Sprinter',driver:'Juan Pérez',result:'Aprobado',items:10},
+  {date:'08/03/2026 06:00',vehicle:'DEF-789 – Hyundai H1',driver:'María López',result:'Aprobado',items:10},
+  {date:'08/03/2026 06:20',vehicle:'JKL-345 – Ford Transit',driver:'Andrés Mora',result:'Con observaciones',items:8},
+  {date:'07/03/2026 05:50',vehicle:'MNO-678 – Kia Carnival',driver:'Patricia Silva',result:'Aprobado',items:10},
+];
+
+// ── HELPERS ───────────────────────────────────────
+const pages = {
+  dashboard: 'Panel de Control',
+  students: 'Gestión de Estudiantes',
+  drivers: 'Gestión de Conductores',
+  vehicles: 'Gestión de Vehículos',
+  routes: 'Optimización de Rutas',
+  docs: 'Control Documental',
+  alerts: 'Sistema de Alertas',
+  checklist: 'Lista de Chequeo',
+  reports: 'Reportes'
+};
+
+function docBadge(d) {
+  if (!d) return '';
+  const cls = d.status==='ok' ? 'doc-ok' : d.status==='warn' ? 'doc-warn' : 'doc-exp';
+  const icon = d.status==='ok' ? 'check_circle' : d.status==='warn' ? 'warning' : 'error';
+  const lbl = d.status==='ok' ? 'Al Día' : d.status==='warn' ? 'Por Vencer' : 'Vencido';
+  return `<span class="${cls}"><span class="material-symbols-outlined" style="font-size:13px">${icon}</span>${lbl}<span class="ml-1 font-normal normal-case tracking-normal">${d.exp!=='N/A' ? d.exp : ''}</span></span>`;
+}
+
+function statusBadge(s) {
+  const map = {
+    'Activo':'badge-green','Disponible':'badge-green','En Ruta':'badge-blue',
+    'Mantenimiento':'badge-slate','Inactivo':'badge-slate',
+    'Al Día':'doc-ok','Por Vencer':'doc-warn','Vencido':'doc-exp'
+  };
+  const dotColor = {
+    'Activo':'bg-emerald-600','Disponible':'bg-emerald-600','En Ruta':'bg-blue-600',
+    'Mantenimiento':'bg-slate-500','Inactivo':'bg-slate-400'
+  };
+  const c = map[s] || 'badge-slate';
+  const dot = dotColor[s] ? `<span class="size-1.5 rounded-full ${dotColor[s]}"></span>` : '';
+  return `<span class="${c}">${dot}${s}</span>`;
+}
+
+// ── AUTH ──────────────────────────────────────────
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  if(u==='admin' && p==='1234') {
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-app').classList.add('active');
+    renderAll();
+  } else {
+    err.classList.remove('hidden');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key==='Enter' && document.getElementById('screen-login').classList.contains('active')) doLogin();
+});
+
+function doLogout() {
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-error').classList.add('hidden');
+}
+
+// ── NAVIGATION ────────────────────────────────────
+let currentPage = 'dashboard';
+function navigate(page) {
+  // hide all panels
+  document.querySelectorAll('[id^="panel-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('panel-'+page).classList.remove('hidden');
+  // update nav
+  document.querySelectorAll('[data-nav]').forEach(el => {
+    el.classList.remove('active','text-white','bg-primary');
+    el.classList.add('text-slate-600','hover:bg-slate-100');
+  });
+  const active = document.querySelector(`[data-nav="${page}"]`);
+  if(active) {
+    active.classList.add('active','text-white');
+    active.classList.remove('text-slate-600','hover:bg-slate-100');
+  }
+  document.getElementById('page-title').textContent = pages[page] || page;
+  currentPage = page;
+}
+
+// ── RENDER ALL ────────────────────────────────────
+function renderAll() {
+  renderStudents(students);
+  renderDrivers();
+  renderVehicles();
+  renderRoutes();
+  renderDocsVehicles();
+  renderDocsDrivers();
+  renderAlerts('all');
+  renderChecklist();
+  renderChecklistHistory();
+  renderReportStudentsRoutes();
+  navigate('dashboard');
+}
+
+// ── STUDENTS ─────────────────────────────────────
+function renderStudents(data) {
+  const tbody = document.getElementById('students-tbody');
+  tbody.innerHTML = data.map(s => `
+    <tr class="hover:bg-slate-50 transition-colors">
+      <td class="px-5 py-3 font-medium text-slate-800 text-sm">${s.name}</td>
+      <td class="px-5 py-3 text-xs font-mono text-slate-600">${s.id}</td>
+      <td class="px-5 py-3 text-xs text-slate-500">${s.address}</td>
+      <td class="px-5 py-3 text-sm text-slate-600">${s.phone}</td>
+      <td class="px-5 py-3 text-sm text-slate-600">${s.route}</td>
+      <td class="px-5 py-3">${statusBadge(s.status)}</td>
+      <td class="px-5 py-3 text-right">
+        <div class="flex items-center justify-end gap-1">
+          <button class="p-1.5 rounded-lg hover:bg-primary hover:text-white text-slate-400 transition-colors" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+          <button class="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-slate-400 transition-colors" title="Inactivar"><span class="material-symbols-outlined text-[16px]">block</span></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+function filterStudents(q) {
+  renderStudents(students.filter(s => s.name.toLowerCase().includes(q.toLowerCase()) || s.id.toLowerCase().includes(q.toLowerCase())));
+}
+function filterStudentsByRoute(r) {
+  renderStudents(r ? students.filter(s=>s.route===r) : students);
+}
+
+// ── DRIVERS ──────────────────────────────────────
+function renderDrivers() {
+  document.getElementById('drivers-tbody').innerHTML = drivers.map(d => {
+    const expDate = new Date(d.licExp.split('/').reverse().join('-'));
+    const today = new Date('2026-03-09');
+    const diff = Math.ceil((expDate-today)/(1000*86400));
+    const expBadge = diff<0 ? `<span class="doc-exp"><span class="material-symbols-outlined text-[13px]">error</span>Vencida</span>` :
+                     diff<=15 ? `<span class="doc-warn"><span class="material-symbols-outlined text-[13px]">warning</span>Por vencer</span>` :
+                     `<span class="doc-ok"><span class="material-symbols-outlined text-[13px]">check_circle</span>Vigente</span>`;
+    return `<tr class="hover:bg-slate-50 transition-colors">
+      <td class="px-5 py-3 font-medium text-slate-800 text-sm">${d.name}</td>
+      <td class="px-5 py-3 text-xs text-slate-500">${d.doc}</td>
+      <td class="px-5 py-3 text-xs font-mono text-slate-600">${d.license}</td>
+      <td class="px-5 py-3 text-sm">${expBadge}<span class="ml-1 text-xs text-slate-400">${d.licExp}</span></td>
+      <td class="px-5 py-3 text-sm text-slate-600">${d.phone}</td>
+      <td class="px-5 py-3">${statusBadge(d.status)}</td>
+      <td class="px-5 py-3 text-right">
+        <div class="flex items-center justify-end gap-1">
+          <button class="p-1.5 rounded-lg hover:bg-primary hover:text-white text-slate-400 transition-colors"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+          <button class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors"><span class="material-symbols-outlined text-[16px]">description</span></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── VEHICLES ─────────────────────────────────────
+function renderVehicles() {
+  document.getElementById('vehicles-tbody').innerHTML = vehicles.map(v => `
+    <tr class="hover:bg-slate-50 transition-colors">
+      <td class="px-5 py-3"><span class="px-2 py-1 bg-slate-100 rounded text-xs font-mono font-bold text-slate-700">${v.plate}</span></td>
+      <td class="px-5 py-3">
+        <div class="text-sm font-semibold text-slate-800">${v.brand} ${v.model}</div>
+        <div class="text-xs text-slate-500">${v.type} · ${v.color}</div>
+      </td>
+      <td class="px-5 py-3 text-sm text-slate-600">${v.driver}</td>
+      <td class="px-5 py-3 text-center text-sm font-medium text-slate-600">${v.capacity}</td>
+      <td class="px-5 py-3">${statusBadge(v.status)}</td>
+      <td class="px-5 py-3">${statusBadge(v.doc)}</td>
+      <td class="px-5 py-3 text-right">
+        <div class="flex items-center justify-end gap-1">
+          <button onclick="navigate('checklist')" class="p-1.5 rounded-lg hover:bg-primary hover:text-white text-slate-400 transition-colors" title="Checklist"><span class="material-symbols-outlined text-[16px]">checklist</span></button>
+          <button class="p-1.5 rounded-lg hover:bg-primary hover:text-white text-slate-400 transition-colors" title="Editar"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+          <button onclick="navigate('docs')" class="p-1.5 rounded-lg hover:bg-primary hover:text-white text-slate-400 transition-colors" title="Documentos"><span class="material-symbols-outlined text-[16px]">description</span></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ── ROUTES ───────────────────────────────────────
+let selectedRoute = routes[0];
+function renderRoutes() {
+  const list = document.getElementById('routes-list');
+  list.innerHTML = routes.map(r => `
+    <div onclick="selectRoute(${r.id})" id="route-card-${r.id}" class="bg-white border border-slate-200 rounded-xl p-4 cursor-pointer hover:shadow-md transition-all hover:border-primary/30">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 rounded-full" style="background:${r.color}"></div>
+          <span class="font-bold text-slate-800 text-sm">${r.name}</span>
+        </div>
+        <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">${r.status}</span>
+      </div>
+      <div class="text-xs text-slate-500 space-y-1 ml-6">
+        <p>Conductor: <span class="font-medium text-slate-700">${r.driver}</span></p>
+        <p>Vehículo: <span class="font-mono font-medium text-slate-700">${r.vehicle}</span></p>
+        <p>Estudiantes: <span class="font-bold text-slate-700">${r.students}</span></p>
+        <p>Horario: ${r.schedule}</p>
+      </div>
+    </div>`).join('');
+  renderRouteDetail(routes[0]);
+}
+function selectRoute(id) {
+  selectedRoute = routes.find(r=>r.id===id);
+  renderRouteDetail(selectedRoute);
+}
+function renderRouteDetail(r) {
+  const el = document.getElementById('route-detail');
+  el.innerHTML = `
+    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full" style="background:${r.color}"></div>
+        <h3 class="text-lg font-bold text-slate-800">${r.name}</h3>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-[#163a63] transition-colors shadow-sm">Recalcular Ruta</button>
+        <button onclick="openModal('modal-add-vehicle')" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors">Editar</button>
+      </div>
+    </div>
+    <div class="p-6 grid grid-cols-2 gap-4 border-b border-slate-100">
+      <div><p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Conductor</p><p class="font-bold text-slate-800">${r.driver}</p></div>
+      <div><p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Vehículo</p><p class="font-bold text-slate-800 font-mono">${r.vehicle}</p></div>
+      <div><p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Estudiantes</p><p class="font-bold text-slate-800">${r.students}</p></div>
+      <div><p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Horario</p><p class="font-bold text-slate-800">${r.schedule}</p></div>
+    </div>
+    <div class="p-6 border-b border-slate-100">
+      <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-3">Paradas</p>
+      <div class="space-y-2">
+        ${r.stops.map((s,i) => `
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col items-center">
+              <div class="w-3 h-3 rounded-full ${i===r.stops.length-1?'bg-primary':'border-2 border-primary'}"></div>
+              ${i<r.stops.length-1?`<div class="w-0.5 h-6 bg-slate-200 mt-1"></div>`:''}
+            </div>
+            <span class="text-sm font-medium text-slate-700 ${i===r.stops.length-1?'text-primary font-bold':''}">${s}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="p-6 flex-1 flex items-center justify-center" style="background:linear-gradient(135deg,#f8fafc,#e2e8f0);">
+      <div class="text-center text-slate-400">
+        <span class="material-symbols-outlined text-5xl text-slate-300">map</span>
+        <p class="text-sm font-medium mt-2">Vista de mapa disponible en versión completa</p>
+        <p class="text-xs text-slate-300 mt-1">Integración con Google Maps API</p>
+      </div>
+    </div>`;
+}
+
+// ── DOCS ─────────────────────────────────────────
+function renderDocsVehicles() {
+  document.getElementById('docs-veh-tbody').innerHTML = docsVehicles.map(d => `
+    <tr class="hover:bg-slate-50 transition-colors">
+      <td class="px-5 py-3">
+        <span class="font-mono font-bold text-slate-700 text-sm">${d.plate}</span>
+        <span class="text-xs text-slate-400 ml-2">${d.brand}</span>
+      </td>
+      <td class="px-5 py-3">${docBadge(d.soat)}</td>
+      <td class="px-5 py-3">${docBadge(d.rtm)}</td>
+      <td class="px-5 py-3">${docBadge(d.seguro)}</td>
+      <td class="px-5 py-3">${docBadge(d.tarjeta)}</td>
+      <td class="px-5 py-3 text-right">
+        <button class="px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-[#163a63] transition-colors">Actualizar</button>
+      </td>
+    </tr>`).join('');
+}
+function renderDocsDrivers() {
+  document.getElementById('docs-cond-tbody').innerHTML = docsDrivers.map(d => `
+    <tr class="hover:bg-slate-50 transition-colors">
+      <td class="px-5 py-3 font-medium text-slate-800 text-sm">${d.name}</td>
+      <td class="px-5 py-3">${docBadge(d.cedula)}</td>
+      <td class="px-5 py-3">${docBadge(d.licencia)}</td>
+      <td class="px-5 py-3">${docBadge(d.medico)}</td>
+      <td class="px-5 py-3 text-right">
+        <button class="px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-[#163a63] transition-colors">Actualizar</button>
+      </td>
+    </tr>`).join('');
+}
+function switchDocTab(tab) {
+  document.getElementById('docs-veh-panel').classList.toggle('hidden', tab!=='veh');
+  document.getElementById('docs-cond-panel').classList.toggle('hidden', tab!=='cond');
+  document.getElementById('tab-veh').className = tab==='veh'
+    ? 'px-5 py-2 rounded-md text-sm font-semibold bg-white text-primary shadow-sm transition-all'
+    : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-500 hover:text-slate-700 transition-all';
+  document.getElementById('tab-cond').className = tab==='cond'
+    ? 'px-5 py-2 rounded-md text-sm font-semibold bg-white text-primary shadow-sm transition-all'
+    : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-500 hover:text-slate-700 transition-all';
+}
+
+// ── ALERTS ───────────────────────────────────────
+function renderAlerts(filter) {
+  const data = filter==='all' ? allAlerts : allAlerts.filter(a=>a.type===filter);
+  document.getElementById('alerts-list').innerHTML = data.map(a => {
+    const bg = a.type==='exp' ? 'bg-red-50 border-red-100 border-l-red-500' : 'bg-amber-50 border-amber-100 border-l-amber-500';
+    const iconColor = a.type==='exp' ? 'text-red-500' : 'text-amber-500';
+    return `<div class="${bg} border border-l-4 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition-shadow">
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined ${iconColor} text-[28px]">${a.icon}</span>
+        <div>
+          <p class="font-semibold text-slate-800 text-sm">${a.title}</p>
+          <p class="text-xs text-slate-500 mt-0.5">${a.desc} · <span class="font-medium">${a.entity}</span></p>
+        </div>
+      </div>
+      <button onclick="navigate('${a.action}')" class="ml-4 shrink-0 border border-slate-200 bg-white hover:bg-primary hover:text-white px-4 py-2 rounded-lg text-xs font-bold text-slate-600 transition-all shadow-sm">Gestionar</button>
+    </div>`;
+  }).join('');
+
+  // update buttons
+  ['all','exp','warn'].forEach(f => {
+    const btn = document.getElementById('alert-btn-'+f);
+    btn.className = f===filter
+      ? 'px-4 py-2 rounded-lg text-xs font-bold bg-primary text-white transition-all'
+      : 'px-4 py-2 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all';
+  });
+}
+function filterAlerts(f) { renderAlerts(f); }
+
+// ── CHECKLIST ────────────────────────────────────
+function renderChecklist() {
+  document.getElementById('checklist-items').innerHTML = checklistItems.map((item,i) => `
+    <label class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors">
+      <input type="checkbox" id="chk-${i}" class="w-4 h-4 rounded"/>
+      <span class="text-sm text-slate-700">${item}</span>
+    </label>`).join('');
+}
+function renderChecklistHistory() {
+  document.getElementById('checklist-history').innerHTML = checklistHistory.map(h => {
+    const ok = h.result==='Aprobado';
+    return `<div class="p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition-colors">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-sm font-semibold text-slate-800">${h.vehicle}</span>
+        <span class="${ok?'doc-ok':'doc-warn'}"><span class="material-symbols-outlined text-[13px]">${ok?'check_circle':'warning'}</span>${h.result}</span>
+      </div>
+      <div class="text-xs text-slate-400 space-y-0.5">
+        <p>Conductor: ${h.driver} · ${h.items}/10 ítems</p>
+        <p>${h.date}</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+function submitChecklist() {
+  const total = checklistItems.length;
+  const checked = checklistItems.filter((_,i)=>document.getElementById('chk-'+i)?.checked).length;
+  if(checked < total) {
+    showToast(`⚠ ${total-checked} ítems sin verificar. Complete todos los ítems.`);
+    return;
+  }
+  showToast('Vehículo habilitado exitosamente para el viaje');
+  // reset
+  checklistItems.forEach((_,i)=>{ const el=document.getElementById('chk-'+i); if(el) el.checked=false; });
+}
+
+// ── REPORTS ──────────────────────────────────────
+function renderReportStudentsRoutes() {
+  const data = [
+    {route:'Ruta Norte',students:18,color:'bg-blue-500'},
+    {route:'Ruta Sur',students:16,color:'bg-orange-500'},
+    {route:'Ruta Centro',students:14,color:'bg-green-500'},
+    {route:'Ruta Occidental',students:13,color:'bg-rose-500'},
+    {route:'Ruta Este',students:11,color:'bg-purple-500'},
+  ];
+  document.getElementById('report-students-routes').innerHTML = data.map(d => `
+    <div>
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-sm text-slate-600">${d.route}</span>
+        <span class="font-bold text-slate-800">${d.students}</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-1.5">
+        <div class="${d.color} h-1.5 rounded-full" style="width:${Math.round(d.students/18*100)}%"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── MODAL ────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+// close modal on backdrop click
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); });
+});
+
+// ── TOAST ────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.remove('translate-y-20','opacity-0');
+  t.classList.add('translate-y-0','opacity-100');
+  setTimeout(()=>{ t.classList.add('translate-y-20','opacity-0'); t.classList.remove('translate-y-0','opacity-100'); }, 3000);
+}
+</script>
+</body>
+</html>
