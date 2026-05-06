@@ -31,6 +31,11 @@ export default function Sidebar() {
       href: "/dashboard/conductores",
       icon: "directions_bus",
     },
+    {
+      label: "Vehiculos",
+      href: "/dashboard/vehiculos",
+      icon: "directions_bus",
+    },
     ...(userRole === "admin"
       ? [
           {
