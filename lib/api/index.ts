@@ -9,6 +9,21 @@ export type {
   StudentRecord,
 } from "./types/students";
 export type { DriverPayload, DriverRecord } from "./types/drivers";
+export type {
+  AlertClassification,
+  AlertListMeta,
+  AlertListResponse,
+  AlertQueryParams,
+  AlertReadState,
+  AlertType,
+  DocumentTypeRecord,
+  DocumentAlertRecord,
+  DocumentVehicleRecord,
+  GenerateExpiryAlertsResponse,
+  PersonDocumentLinkRecord,
+  PersonDocumentPersonRecord,
+  PersonDocumentRecord,
+} from "./types/document-management";
 export type { GuardianPayload, GuardianRecord } from "./types/guardians";
 export type {
   UpdateVehiclePayload,
@@ -27,6 +42,7 @@ export type {
 } from "./types/users";
 
 export { authAPI } from "./modules/auth";
+export { documentManagementAPI } from "./modules/document-management";
 export { studentsAPI } from "./modules/students";
 export { driversAPI } from "./modules/drivers";
 export { guardiansAPI } from "./modules/guardians";
