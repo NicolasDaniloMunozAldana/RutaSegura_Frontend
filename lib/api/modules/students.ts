@@ -13,6 +13,11 @@ export const studentsAPI = {
       token,
     }) as Promise<ApiEnvelope<StudentRecord>>,
 
+  findByZone: (zoneId: number, token: string) =>
+    apiCall(`/students/by-zone/${zoneId}`, {
+      token,
+    }) as Promise<ApiEnvelope<StudentRecord[]>>,
+
   create: (payload: StudentPayload, token: string) =>
     apiCall("/students", {
       method: "POST",

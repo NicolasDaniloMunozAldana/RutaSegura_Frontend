@@ -37,6 +37,11 @@ export default function Sidebar() {
       icon: "directions_bus",
     },
     {
+      label: "Rutas",
+      href: "/dashboard/rutas",
+      icon: "route",
+    },
+    {
       label: "Documentación",
       href: "/dashboard/documentacion",
       icon: "description",

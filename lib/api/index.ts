@@ -40,6 +40,31 @@ export type {
   UserRecord,
   UserRole,
 } from "./types/users";
+export type {
+  CreateRouteAssignmentPayload,
+  RouteAssignmentAddressRef,
+  RouteAssignmentPersonRef,
+  RouteAssignmentRecord,
+  RouteAssignmentStopRef,
+  RouteDestinationOption,
+  RouteDestinationRef,
+  RouteDriverOption,
+  RouteDriverRef,
+  RouteFormOptions,
+  RouteGeoJson,
+  RouteGeometry,
+  RoutePayload,
+  RouteQueryParams,
+  RouteRecord,
+  RouteStopRecord,
+  RouteType,
+  RouteVehicleOption,
+  RouteVehicleRef,
+  RouteZoneOption,
+  RouteZoneRef,
+  UpdateRouteAssignmentPayload,
+  UpdateRoutePayload,
+} from "./types/routes";
 
 export { authAPI } from "./modules/auth";
 export { documentManagementAPI } from "./modules/document-management";
@@ -48,3 +73,4 @@ export { driversAPI } from "./modules/drivers";
 export { guardiansAPI } from "./modules/guardians";
 export { vehiclesAPI } from "./modules/vehicles";
 export { usersAPI } from "./modules/users";
+export { routesAPI } from "./modules/routes";
