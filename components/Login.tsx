@@ -32,13 +32,11 @@ export default function Login() {
     <div className="min-h-screen bg-[var(--background-light)] flex items-center justify-center flex-col">
       <div className="bg-white rounded-2xl shadow-xl p-10 w-full max-w-sm border border-slate-200">
         <div className="flex flex-col items-center mb-8 gap-3">
-          <div className="bg-[#0F2B4B] rounded-xl p-3">
-            <span className="material-symbols-outlined text-white text-3xl">directions_bus</span>
-          </div>
+          <img src="/logo-villafontana.png" alt="Villa Fontana" className="h-16 w-16" />
           <div className="text-center">
-            <h1 className="text-[#0F2B4B] font-bold text-2xl leading-none">RutaSegura</h1>
+            <h1 className="text-[#003D7A] font-bold text-2xl leading-none">RutaSegura</h1>
             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mt-1">
-              Colegio Villa Fontana
+              Gimnasio Villa Fontana
             </p>
           </div>
         </div>
@@ -53,7 +51,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin"
-              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#0F2B4B]/20 focus:border-[#0F2B4B] outline-none transition-all"
+              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003D7A]/20 focus:border-[#003D7A] outline-none transition-all"
               disabled={isLoading}
             />
           </div>
@@ -67,7 +65,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••"
-              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#0F2B4B]/20 focus:border-[#0F2B4B] outline-none transition-all"
+              className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003D7A]/20 focus:border-[#003D7A] outline-none transition-all"
               disabled={isLoading}
             />
           </div>
@@ -79,7 +77,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#0F2B4B] hover:bg-[#163a63] disabled:bg-slate-400 transition-colors text-white font-bold py-2.5 rounded-lg text-sm shadow-md active:scale-95 disabled:cursor-not-allowed"
+            className="w-full bg-[#003D7A] hover:bg-[#0066CC] disabled:bg-slate-400 transition-colors text-white font-bold py-2.5 rounded-lg text-sm shadow-md active:scale-95 disabled:cursor-not-allowed"
           >
             {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
           </button>

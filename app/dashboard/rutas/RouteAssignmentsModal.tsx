@@ -278,7 +278,7 @@ export default function RouteAssignmentsModal({
                 <select
                   value={selectedPersonId}
                   onChange={(e) => handleSelectStudent(e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                 >
                   <option value="">Selecciona un estudiante</option>
                   {availableStudents.map((student) => (
@@ -302,7 +302,7 @@ export default function RouteAssignmentsModal({
                   value={selectedAddressId}
                   onChange={(e) => setSelectedAddressId(e.target.value)}
                   disabled={!selectedStudent}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 disabled:bg-slate-100 disabled:text-slate-500"
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 disabled:bg-slate-100 disabled:text-slate-500"
                 >
                   <option value="">Selecciona una dirección</option>
                   {selectedStudent?.personAddresses.map((personAddress) => (
@@ -327,7 +327,7 @@ export default function RouteAssignmentsModal({
               <button
                 type="submit"
                 disabled={submitLoading}
-                className="inline-flex items-center gap-2 bg-[#0F2B4B] hover:bg-[#163a63] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                className="inline-flex items-center gap-2 bg-[#003D7A] hover:bg-[#0066CC] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
               >
                 <span className="material-symbols-outlined text-[18px]">
                   person_add
@@ -448,7 +448,7 @@ export default function RouteAssignmentsModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+            className="w-full py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
           >
             Cerrar
           </button>
@@ -457,3 +457,4 @@ export default function RouteAssignmentsModal({
     </div>
   );
 }
+

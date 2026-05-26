@@ -508,7 +508,7 @@ export default function Dashboard() {
               </h3>
               <Link
                 href="/dashboard/alertas"
-                className="text-[#0F2B4B] text-xs font-bold hover:underline"
+                className="text-[#003D7A] text-xs font-bold hover:underline"
               >
                 Ver todas
               </Link>
@@ -551,7 +551,7 @@ export default function Dashboard() {
                       </div>
                       <Link
                         href="/dashboard/alertas"
-                        className="border border-slate-200 hover:bg-[#0F2B4B] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
+                        className="border border-slate-200 hover:bg-[#003D7A] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
                       >
                         Gestionar
                       </Link>
@@ -564,7 +564,7 @@ export default function Dashboard() {
           <section>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-slate-800 font-bold text-lg flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#0F2B4B]">description</span>
+                <span className="material-symbols-outlined text-[#003D7A]">description</span>
                 Control Documental
               </h3>
               <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 p-1">
@@ -573,7 +573,7 @@ export default function Dashboard() {
                   onClick={() => setDocTab("vehiculos")}
                   className={
                     docTab === "vehiculos"
-                      ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#0F2B4B] shadow-sm"
+                      ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#003D7A] shadow-sm"
                       : "px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-700"
                   }
                 >
@@ -584,7 +584,7 @@ export default function Dashboard() {
                   onClick={() => setDocTab("conductores")}
                   className={
                     docTab === "conductores"
-                      ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#0F2B4B] shadow-sm"
+                      ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#003D7A] shadow-sm"
                       : "px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-700"
                   }
                 >
@@ -659,7 +659,7 @@ export default function Dashboard() {
                                   disabled={!canUpdate}
                                   className={
                                     canUpdate
-                                      ? "border border-slate-200 bg-white hover:bg-[#0F2B4B] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
+                                      ? "border border-slate-200 bg-white hover:bg-[#003D7A] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
                                       : "border border-slate-200 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 cursor-not-allowed"
                                   }
                                 >
@@ -744,10 +744,10 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/dashboard/estudiantes"
-                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#0F2B4B] hover:bg-slate-50/50 transition-all group"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#003D7A] hover:bg-slate-50/50 transition-all group"
               >
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#0F2B4B]/10">
-                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#0F2B4B] transition-colors">
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#003D7A]/10">
+                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#003D7A] transition-colors">
                     person_add
                   </span>
                 </div>
@@ -755,10 +755,10 @@ export default function Dashboard() {
               </Link>
               <Link
                 href="/dashboard/conductores"
-                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#0F2B4B] hover:bg-slate-50/50 transition-all group"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#003D7A] hover:bg-slate-50/50 transition-all group"
               >
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#0F2B4B]/10">
-                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#0F2B4B] transition-colors">
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#003D7A]/10">
+                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#003D7A] transition-colors">
                     assignment_ind
                   </span>
                 </div>
@@ -766,10 +766,10 @@ export default function Dashboard() {
               </Link>
               <Link
                 href="/dashboard/vehiculos"
-                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#0F2B4B] hover:bg-slate-50/50 transition-all group"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#003D7A] hover:bg-slate-50/50 transition-all group"
               >
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#0F2B4B]/10">
-                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#0F2B4B] transition-colors">
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#003D7A]/10">
+                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#003D7A] transition-colors">
                     airport_shuttle
                   </span>
                 </div>
@@ -777,10 +777,10 @@ export default function Dashboard() {
               </Link>
               <Link
                 href="/dashboard/alertas"
-                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#0F2B4B] hover:bg-slate-50/50 transition-all group"
+                className="flex flex-col items-center justify-center p-4 bg-white border border-slate-200 rounded-xl gap-2 hover:border-[#003D7A] hover:bg-slate-50/50 transition-all group"
               >
-                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#0F2B4B]/10">
-                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#0F2B4B] transition-colors">
+                <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-[#003D7A]/10">
+                  <span className="material-symbols-outlined text-slate-500 text-[20px] group-hover:text-[#003D7A] transition-colors">
                     notifications
                   </span>
                 </div>
@@ -855,7 +855,7 @@ export default function Dashboard() {
                             onChange={(event) =>
                               updateDocField(field.key, "issueDate", event.target.value)
                             }
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -905,7 +905,7 @@ export default function Dashboard() {
                 <button
                   type="submit"
                   disabled={docSubmitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {docSubmitLoading ? "Guardando..." : "Actualizar fechas"}
                 </button>
@@ -917,3 +917,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

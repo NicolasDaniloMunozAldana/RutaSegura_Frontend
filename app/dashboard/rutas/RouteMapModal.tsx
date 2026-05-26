@@ -148,8 +148,8 @@ export default function RouteMapModal({
 
       L.circleMarker([lat, lng], {
         radius: 8,
-        color: "#0F2B4B",
-        fillColor: "#0F2B4B",
+        color: "#003D7A",
+        fillColor: "#003D7A",
         fillOpacity: 0.85,
       })
         .addTo(layers)
@@ -163,7 +163,7 @@ export default function RouteMapModal({
         (coord) => [coord[1], coord[0]] as [number, number],
       );
       L.polyline(latLngs, {
-        color: "#0F2B4B",
+        color: "#003D7A",
         weight: 4,
         opacity: 0.8,
       }).addTo(layers);
@@ -325,7 +325,7 @@ export default function RouteMapModal({
                   key={stop.id}
                   className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2"
                 >
-                  <span className="flex size-6 items-center justify-center rounded-full bg-[#0F2B4B] text-xs font-bold text-white">
+                  <span className="flex size-6 items-center justify-center rounded-full bg-[#003D7A] text-xs font-bold text-white">
                     {stop.stopOrder}
                   </span>
                   <span className="flex-1 text-sm font-medium text-slate-700">
@@ -358,7 +358,7 @@ export default function RouteMapModal({
               type="button"
               onClick={handleCalculate}
               disabled={calcLoading}
-              className="inline-flex items-center gap-2 bg-[#0F2B4B] hover:bg-[#163a63] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+              className="inline-flex items-center gap-2 bg-[#003D7A] hover:bg-[#0066CC] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
             >
               <span className="material-symbols-outlined text-[18px]">route</span>
               {calcLoading ? "Calculando..." : "Calcular ruta"}
@@ -389,3 +389,4 @@ export default function RouteMapModal({
     </div>
   );
 }
+

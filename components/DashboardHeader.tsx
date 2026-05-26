@@ -55,7 +55,7 @@ export default function DashboardHeader() {
           className="relative cursor-pointer"
           aria-label="Notificaciones"
         >
-          <span className="material-symbols-outlined text-slate-600 hover:text-[#0F2B4B] transition-colors">
+          <span className="material-symbols-outlined text-slate-600 hover:text-[#003D7A] transition-colors">
             notifications
           </span>
           {unreadLabel && (
@@ -66,8 +66,8 @@ export default function DashboardHeader() {
         </Link>
 
         <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
-          <div className="size-8 rounded-full bg-[#0F2B4B]/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-[#0F2B4B] text-[18px]">person</span>
+          <div className="size-8 rounded-full bg-[#003D7A]/10 flex items-center justify-center">
+            <span className="material-symbols-outlined text-[#003D7A] text-[18px]">person</span>
           </div>
           <span className="text-sm font-semibold text-slate-700">{user?.fullName || "Admin Usuario"}</span>
         </div>

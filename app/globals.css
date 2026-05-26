@@ -5,7 +5,9 @@
   --background: #f8fafc;
   --background-light: #f8fafc;
   --foreground: #0f172a;
-  --primary: #0f2b4b;
+  --primary: #003D7A;
+  --primary-hover: #0066CC;
+  --primary-light: #FDD835;
 }
 
 @theme inline {

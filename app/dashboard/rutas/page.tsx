@@ -523,7 +523,7 @@ export default function RutasPage() {
         {canManage && (
           <button
             onClick={openCreateModal}
-            className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+            className="bg-[#003D7A] hover:bg-[#0066CC] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px] cursor-pointer">
               add
@@ -549,11 +549,11 @@ export default function RutasPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por nombre, destino, conductor o placa"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           />
         </div>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={zoneFilter}
           onChange={(e) => setZoneFilter(e.target.value)}
         >
@@ -565,7 +565,7 @@ export default function RutasPage() {
           ))}
         </select>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
         >
@@ -577,7 +577,7 @@ export default function RutasPage() {
           ))}
         </select>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -720,7 +720,7 @@ export default function RutasPage() {
                           <>
                             <button
                               onClick={() => openEditModal(route)}
-                              className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-[#003D7A] hover:text-white text-slate-400 transition-colors cursor-pointer"
                               title="Editar"
                             >
                               <span className="material-symbols-outlined text-[16px]">
@@ -933,7 +933,7 @@ export default function RutasPage() {
               <button
                 type="button"
                 onClick={closeViewModal}
-                className="w-full py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                className="w-full py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
               >
                 Cerrar
               </button>
@@ -984,13 +984,13 @@ export default function RutasPage() {
                           onClick={() => updateField("routeType", card.value)}
                           className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-all ${
                             active
-                              ? "border-[#0F2B4B] bg-[#0F2B4B]/5 ring-2 ring-[#0F2B4B]/20"
+                              ? "border-[#003D7A] bg-[#003D7A]/5 ring-2 ring-[#003D7A]/20"
                               : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
                           }`}
                         >
                           <span
                             className={`material-symbols-outlined text-[24px] ${
-                              active ? "text-[#0F2B4B]" : "text-slate-400"
+                              active ? "text-[#003D7A]" : "text-slate-400"
                             }`}
                           >
                             {card.icon}
@@ -998,7 +998,7 @@ export default function RutasPage() {
                           <span>
                             <span
                               className={`block text-sm font-bold ${
-                                active ? "text-[#0F2B4B]" : "text-slate-700"
+                                active ? "text-[#003D7A]" : "text-slate-700"
                               }`}
                             >
                               {card.title}
@@ -1025,7 +1025,7 @@ export default function RutasPage() {
                       maxLength={100}
                       value={form.name}
                       onChange={(e) => updateField("name", e.target.value)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
 
@@ -1037,7 +1037,7 @@ export default function RutasPage() {
                       required
                       value={form.zoneId}
                       onChange={(e) => updateField("zoneId", e.target.value)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Selecciona una zona</option>
                       {options.zones.map((zone) => (
@@ -1058,7 +1058,7 @@ export default function RutasPage() {
                       onChange={(e) =>
                         updateField("destinationId", e.target.value)
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Selecciona una sede</option>
                       {options.destinations.map((destination) => (
@@ -1082,7 +1082,7 @@ export default function RutasPage() {
                       onChange={(e) =>
                         updateField("vehiclePlate", e.target.value)
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Selecciona un vehículo</option>
                       {options.vehicles.map((vehicle) => {
@@ -1111,7 +1111,7 @@ export default function RutasPage() {
                       onChange={(e) =>
                         updateField("driverPersonId", e.target.value)
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Selecciona un conductor</option>
                       {options.drivers.map((driver) => (
@@ -1131,7 +1131,7 @@ export default function RutasPage() {
                       required
                       value={form.startTime}
                       onChange={(e) => updateField("startTime", e.target.value)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                     <p className="mt-1 text-xs text-slate-500">
                       Hora de salida desde el colegio. El regreso se calcula
@@ -1168,7 +1168,7 @@ export default function RutasPage() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {submitLoading
                     ? "Guardando..."
@@ -1205,3 +1205,4 @@ export default function RutasPage() {
     </div>
   );
 }
+
