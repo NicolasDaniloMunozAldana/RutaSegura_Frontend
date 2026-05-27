@@ -10,7 +10,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -64,16 +64,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authAPI.login(email, password);
-      const { accessToken, user: userData } = response;
+    const response = await authAPI.login(email, password);
+    const { accessToken, user: userData } = response;
 
-      cookieStore.setToken(accessToken);
-      setToken(accessToken);
-      setUser(userData);
-    } catch (error) {
-      throw error;
-    }
+    cookieStore.setToken(accessToken);
+    setToken(accessToken);
+    setUser(userData);
+
+    return userData;
   };
 
   const logout = () => {

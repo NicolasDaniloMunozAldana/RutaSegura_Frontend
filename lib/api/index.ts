@@ -66,7 +66,10 @@ export type {
   UpdateRoutePayload,
 } from "./types/routes";
 
+export type { GuardianChild, GuardianChildRoute } from "./types/portal";
+
 export { authAPI } from "./modules/auth";
+export { driverPortalAPI, guardianPortalAPI } from "./modules/portal";
 export { documentManagementAPI } from "./modules/document-management";
 export { studentsAPI } from "./modules/students";
 export { driversAPI } from "./modules/drivers";
