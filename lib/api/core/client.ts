@@ -29,7 +29,15 @@ export async function apiCall(endpoint: string, options: RequestOptions = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || `API error: ${response.status}`);
+    // El backend devuelve { message, errors?[] }. Adjuntamos el detalle de
+    // errors para que el usuario vea exactamente qué campo falló.
+    const detail =
+      Array.isArray(error?.errors) && error.errors.length
+        ? `: ${error.errors.join(" · ")}`
+        : "";
+    throw new Error(
+      `${error.message || `API error: ${response.status}`}${detail}`,
+    );
   }
 
   return response.json();

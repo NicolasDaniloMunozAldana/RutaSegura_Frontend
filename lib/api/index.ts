@@ -3,12 +3,39 @@ export type { ApiEnvelope, RequestOptions } from "./core/client";
 
 export type { AuthUser, LoginResponse, ProfileResponse } from "./types/auth";
 export type {
+  PresignDownloadResponse,
+  PresignUploadResponse,
+  StorageFolder,
+} from "./types/files";
+export type {
+  ChecklistItemInput,
+  ChecklistItemRecord,
+  ChecklistRecord,
+  ChecklistTemplateItem,
+  CreateTripPayload,
+  SubmitChecklistPayload,
+  TripDriverRef,
+  TripQueryParams,
+  TripRecord,
+  TripRouteRef,
+  TripStatus,
+  TripVehicleRef,
+} from "./types/trips";
+export type {
+  NotificationRecord,
+  NotificationType,
+} from "./types/notifications";
+export type {
   StudentAddress,
   StudentDocumentLink,
   StudentPayload,
   StudentRecord,
 } from "./types/students";
-export type { DriverPayload, DriverRecord } from "./types/drivers";
+export type {
+  DriverLicensePayload,
+  DriverPayload,
+  DriverRecord,
+} from "./types/drivers";
 export type {
   AlertClassification,
   AlertListMeta,
@@ -66,10 +93,16 @@ export type {
   UpdateRoutePayload,
 } from "./types/routes";
 
+export type { GuardianChild, GuardianChildRoute } from "./types/portal";
+
 export { authAPI } from "./modules/auth";
+export { driverPortalAPI, guardianPortalAPI } from "./modules/portal";
 export { documentManagementAPI } from "./modules/document-management";
+export { filesAPI } from "./modules/files";
+export { tripsAPI, driverTripsAPI, checklistAPI } from "./modules/trips";
+export { notificationsAPI } from "./modules/notifications";
 export { studentsAPI } from "./modules/students";
-export { driversAPI } from "./modules/drivers";
+export { driversAPI, driverProfileAPI } from "./modules/drivers";
 export { guardiansAPI } from "./modules/guardians";
 export { vehiclesAPI } from "./modules/vehicles";
 export { usersAPI } from "./modules/users";

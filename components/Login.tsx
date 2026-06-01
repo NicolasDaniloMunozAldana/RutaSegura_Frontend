@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { homeRouteForRole } from "@/lib/roles";
 
 export default function Login() {
   const router = useRouter();
@@ -18,8 +19,8 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      router.push("/dashboard/estudiantes");
+      const loggedUser = await login(email, password);
+      router.push(homeRouteForRole(loggedUser.role));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Usuario o contraseña incorrectos";
       setError(message);
