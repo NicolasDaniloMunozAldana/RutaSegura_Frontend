@@ -78,7 +78,7 @@ export default function Login() {
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin"
+                placeholder="admin@rutasegura.com"
                 className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003D7A]/20 focus:border-[#003D7A] outline-none transition-all"
                 disabled={isLoading}
               />
