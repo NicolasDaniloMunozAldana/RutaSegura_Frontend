@@ -142,7 +142,7 @@ function showErrorDialog(message: string) {
     text: message,
     icon: "error",
     confirmButtonText: "Entendido",
-    confirmButtonColor: "#0F2B4B",
+    confirmButtonColor: "#003D7A",
     customClass: {
       popup: "rounded-2xl",
       title: "text-slate-800",
@@ -314,11 +314,11 @@ export default function AlertasPage() {
               setMeta((prev) => ({ ...prev, page: 1 }));
             }}
             placeholder="Buscar por mensaje o referencia"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           />
         </div>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={alertType}
           onChange={(e) => {
             setAlertType(e.target.value as "" | AlertType);
@@ -332,7 +332,7 @@ export default function AlertasPage() {
           ))}
         </select>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={readFilter}
           onChange={(e) => {
             setReadFilter(e.target.value as (typeof READ_FILTERS)[number]["value"]);
@@ -353,7 +353,7 @@ export default function AlertasPage() {
             setMeta((prev) => ({ ...prev, page: 1 }));
           }}
           placeholder="Placa"
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
         />
         <input
           type="number"
@@ -364,7 +364,7 @@ export default function AlertasPage() {
             setMeta((prev) => ({ ...prev, page: 1 }));
           }}
           placeholder="Persona ID"
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
         />
         <input
           type="number"
@@ -375,10 +375,10 @@ export default function AlertasPage() {
             setMeta((prev) => ({ ...prev, page: 1 }));
           }}
           placeholder="Dias a vencer"
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
         />
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={limit}
           onChange={(e) => {
             setLimit(e.target.value);
@@ -455,7 +455,7 @@ export default function AlertasPage() {
                     className={
                       alert.isRead
                         ? "text-slate-400 text-xs font-semibold"
-                        : "text-[#0F2B4B] hover:text-[#163a63] text-xs font-semibold"
+                        : "text-[#003D7A] hover:text-[#0066CC] text-xs font-semibold"
                     }
                   >
                     {alert.isRead ? "Leida" : "Marcar leida"}
@@ -497,3 +497,4 @@ export default function AlertasPage() {
     </div>
   );
 }
+

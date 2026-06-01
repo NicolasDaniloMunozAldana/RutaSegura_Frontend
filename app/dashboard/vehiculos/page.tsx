@@ -366,7 +366,7 @@ function showErrorDialog(message: string) {
     text: message,
     icon: "error",
     confirmButtonText: "Entendido",
-    confirmButtonColor: "#0F2B4B",
+    confirmButtonColor: "#003D7A",
     customClass: {
       popup: "rounded-2xl",
       title: "text-slate-800",
@@ -634,7 +634,7 @@ export default function VehiculosPage() {
         </div>
         <button
           onClick={openCreateModal}
-          className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+          className="bg-[#003D7A] hover:bg-[#0066CC] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[18px] cursor-pointer">add</span>
           Registrar Vehículo
@@ -651,11 +651,11 @@ export default function VehiculosPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por placa, detalle o documento"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           />
         </div>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -755,7 +755,7 @@ export default function VehiculosPage() {
                           </button>
                           <button
                             onClick={() => openEditModal(vehicle)}
-                            className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg hover:bg-[#003D7A] hover:text-white text-slate-400 transition-colors cursor-pointer"
                             title="Editar"
                           >
                             <span className="material-symbols-outlined text-[16px]">edit</span>
@@ -911,7 +911,7 @@ export default function VehiculosPage() {
               <button
                 type="button"
                 onClick={closeViewModal}
-                className="w-full py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+                className="w-full py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
               >
                 Cerrar
               </button>
@@ -956,7 +956,7 @@ export default function VehiculosPage() {
                         }))
                       }
                       disabled={isEditMode}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 disabled:bg-slate-100 disabled:text-slate-500"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 disabled:bg-slate-100 disabled:text-slate-500"
                     />
                     {isEditMode && (
                       <p className="mt-1 text-xs text-slate-500">La placa no se puede modificar.</p>
@@ -976,7 +976,7 @@ export default function VehiculosPage() {
                           passengerCapacity: e.target.value,
                         }))
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
 
@@ -992,7 +992,7 @@ export default function VehiculosPage() {
                           year: e.target.value,
                         }))
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
 
@@ -1007,7 +1007,7 @@ export default function VehiculosPage() {
                           brand: e.target.value,
                         }))
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
 
@@ -1022,7 +1022,7 @@ export default function VehiculosPage() {
                           model: e.target.value,
                         }))
                       }
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
                 </div>
@@ -1060,7 +1060,7 @@ export default function VehiculosPage() {
                                   e.target.value,
                                 )
                               }
-                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                             />
                           </div>
 
@@ -1074,7 +1074,7 @@ export default function VehiculosPage() {
                               onChange={(e) =>
                                 updateDocumentField(documentConfig.key, "issueDate", e.target.value)
                               }
-                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                             />
                           </div>
 
@@ -1132,7 +1132,7 @@ export default function VehiculosPage() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {submitLoading ? "Guardando..." : isEditMode ? "Actualizar" : "Guardar"}
                 </button>
@@ -1144,3 +1144,4 @@ export default function VehiculosPage() {
     </div>
   );
 }
+

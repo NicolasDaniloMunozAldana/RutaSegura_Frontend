@@ -117,13 +117,11 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       }`}
     >
       <div className="p-6 flex items-center gap-3">
-        <div className="bg-[#0F2B4B] rounded-lg p-2 flex items-center justify-center text-white">
-          <span className="material-symbols-outlined">directions_bus</span>
-        </div>
+        <img src="/logo-villafontana.png" alt="Villa Fontana" className="h-10 w-10" />
         <div className="flex-1 min-w-0">
-          <h1 className="text-[#0F2B4B] font-bold text-xl leading-none">RutaSegura</h1>
+          <h1 className="text-[#003D7A] font-bold text-xl leading-none">RutaSegura</h1>
           <p className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">
-            Colegio Villa Fontana
+            Gimnasio Villa Fontana
           </p>
         </div>
         <button
@@ -143,7 +141,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors font-medium ${
               isActive(item.href)
-                ? "bg-[#0F2B4B] text-white"
+                ? "bg-[#FDD835] text-slate-900"
                 : "text-slate-600 hover:bg-slate-100"
             }`}
           >
@@ -163,8 +161,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 cursor-pointer group"
           onClick={handleLogout}
         >
-          <div className="size-9 rounded-full bg-[#0F2B4B]/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-[#0F2B4B] text-[18px]">person</span>
+          <div className="size-9 rounded-full bg-[#FDD835] flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-900 text-[18px]">person</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold truncate">{user?.fullName || "Admin Usuario"}</p>

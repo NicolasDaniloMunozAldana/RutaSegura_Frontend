@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "RutaSegura - Colegio Villa Fontana",
+  title: "RutaSegura - Gimnasio Villa Fontana",
   description: "Sistema de gestión de rutas escolares",
 };
 

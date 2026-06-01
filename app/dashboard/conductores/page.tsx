@@ -285,7 +285,7 @@ function showErrorDialog(message: string) {
     text: message,
     icon: "error",
     confirmButtonText: "Entendido",
-    confirmButtonColor: "#0F2B4B",
+    confirmButtonColor: "#003D7A",
     customClass: {
       popup: "rounded-2xl",
       title: "text-slate-800",
@@ -486,7 +486,7 @@ export default function ConductoresPage() {
         </div>
         <button
           onClick={openCreateModal}
-          className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+          className="bg-[#003D7A] hover:bg-[#0066CC] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[18px] cursor-pointer">add</span>
           Registrar Conductor
@@ -503,11 +503,11 @@ export default function ConductoresPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por nombre"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           />
         </div>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -647,7 +647,7 @@ export default function ConductoresPage() {
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -656,7 +656,7 @@ export default function ConductoresPage() {
                     type="text"
                     value={form.phone}
                     onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
               </div>
@@ -669,7 +669,7 @@ export default function ConductoresPage() {
                     required
                     value={form.firstName}
                     onChange={(e) => setForm((prev) => ({ ...prev, firstName: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -678,7 +678,7 @@ export default function ConductoresPage() {
                     type="text"
                     value={form.middleName}
                     onChange={(e) => setForm((prev) => ({ ...prev, middleName: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -688,7 +688,7 @@ export default function ConductoresPage() {
                     required
                     value={form.firstLastname}
                     onChange={(e) => setForm((prev) => ({ ...prev, firstLastname: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -697,7 +697,7 @@ export default function ConductoresPage() {
                     type="text"
                     value={form.secondLastname}
                     onChange={(e) => setForm((prev) => ({ ...prev, secondLastname: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
               </div>
@@ -835,7 +835,7 @@ export default function ConductoresPage() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {submitLoading ? "Guardando..." : isEditMode ? "Actualizar" : "Guardar"}
                 </button>
@@ -847,3 +847,4 @@ export default function ConductoresPage() {
     </div>
   );
 }
+

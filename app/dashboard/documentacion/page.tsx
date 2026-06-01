@@ -382,7 +382,7 @@ export default function DocumentacionPage() {
             onClick={() => setDocTab("vehiculos")}
             className={
               docTab === "vehiculos"
-                ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#0F2B4B] shadow-sm"
+                ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#003D7A] shadow-sm"
                 : "px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-700"
             }
           >
@@ -393,7 +393,7 @@ export default function DocumentacionPage() {
             onClick={() => setDocTab("conductores")}
             className={
               docTab === "conductores"
-                ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#0F2B4B] shadow-sm"
+                ? "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-[#003D7A] shadow-sm"
                 : "px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-700"
             }
           >
@@ -472,7 +472,7 @@ export default function DocumentacionPage() {
                             disabled={!canUpdate}
                             className={
                               canUpdate
-                                ? "border border-slate-200 bg-white hover:bg-[#0F2B4B] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
+                                ? "border border-slate-200 bg-white hover:bg-[#003D7A] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 transition-all"
                                 : "border border-slate-200 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 cursor-not-allowed"
                             }
                           >
@@ -629,7 +629,7 @@ export default function DocumentacionPage() {
                             onChange={(event) =>
                               updateDocField(field.key, "issueDate", event.target.value)
                             }
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                           />
                         </div>
 
@@ -678,7 +678,7 @@ export default function DocumentacionPage() {
                 <button
                   type="submit"
                   disabled={docSubmitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {docSubmitLoading ? "Guardando..." : "Actualizar fechas"}
                 </button>

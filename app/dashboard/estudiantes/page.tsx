@@ -332,8 +332,8 @@ function MapPickerModal({
       if (initialPoint) {
         markerRef.current = L.circleMarker([initialPoint.lat, initialPoint.lng], {
           radius: 8,
-          color: "#0F2B4B",
-          fillColor: "#0F2B4B",
+          color: "#003D7A",
+          fillColor: "#003D7A",
           fillOpacity: 0.8,
         }).addTo(map);
       }
@@ -349,8 +349,8 @@ function MapPickerModal({
 
         markerRef.current = L.circleMarker(evt.latlng, {
           radius: 8,
-          color: "#0F2B4B",
-          fillColor: "#0F2B4B",
+          color: "#003D7A",
+          fillColor: "#003D7A",
           fillOpacity: 0.8,
         }).addTo(map);
       });
@@ -411,7 +411,7 @@ function MapPickerModal({
               type="button"
               disabled={!selectedPoint}
               onClick={() => selectedPoint && onConfirm(selectedPoint)}
-              className="py-2 px-4 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold shadow-md disabled:opacity-60"
+              className="py-2 px-4 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold shadow-md disabled:opacity-60"
             >
               Usar coordenadas
             </button>
@@ -492,7 +492,7 @@ function showErrorDialog(message: string) {
     text: message,
     icon: "error",
     confirmButtonText: "Entendido",
-    confirmButtonColor: "#0F2B4B",
+    confirmButtonColor: "#003D7A",
     customClass: {
       popup: "rounded-2xl",
       title: "text-slate-800",
@@ -792,7 +792,7 @@ export default function EstudiantesPage() {
         </div>
         <button
           onClick={openCreateModal}
-          className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+          className="bg-[#003D7A] hover:bg-[#0066CC] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[18px] cursor-pointer">add</span>
           Registrar Estudiante
@@ -809,11 +809,11 @@ export default function EstudiantesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por nombre"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           />
         </div>
         <select
-          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+          className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -881,7 +881,7 @@ export default function EstudiantesPage() {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => openEditModal(student)}
-                        className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-[#003D7A] hover:text-white text-slate-400 transition-colors cursor-pointer"
                         title="Editar"
                       >
                         <span className="material-symbols-outlined text-[16px]">edit</span>
@@ -942,13 +942,13 @@ export default function EstudiantesPage() {
                     value={guardianQuery}
                     onChange={(e) => setGuardianQuery(e.target.value)}
                     placeholder="Buscar acudiente por nombre"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 mb-2"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 mb-2"
                   />
                   <select
                     required
                     value={form.guardianId}
                     onChange={(e) => setForm((prev) => ({ ...prev, guardianId: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   >
                     <option value="">Seleccionar acudiente...</option>
                     {filteredGuardians.map((guardian) => (
@@ -965,7 +965,7 @@ export default function EstudiantesPage() {
                     required
                     value={form.email}
                     onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
               </div>
@@ -978,7 +978,7 @@ export default function EstudiantesPage() {
                     required
                     value={form.firstName}
                     onChange={(e) => setForm((prev) => ({ ...prev, firstName: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -987,7 +987,7 @@ export default function EstudiantesPage() {
                     type="text"
                     value={form.middleName}
                     onChange={(e) => setForm((prev) => ({ ...prev, middleName: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -997,7 +997,7 @@ export default function EstudiantesPage() {
                     required
                     value={form.firstLastname}
                     onChange={(e) => setForm((prev) => ({ ...prev, firstLastname: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -1006,7 +1006,7 @@ export default function EstudiantesPage() {
                     type="text"
                     value={form.secondLastname}
                     onChange={(e) => setForm((prev) => ({ ...prev, secondLastname: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
               </div>
@@ -1018,7 +1018,7 @@ export default function EstudiantesPage() {
                     type="text"
                     value={form.phone}
                     onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -1037,7 +1037,7 @@ export default function EstudiantesPage() {
                         };
                       })
                     }
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   >
                     {DOCUMENT_TYPES.map((type) => (
                       <option key={type} value={type}>
@@ -1062,7 +1062,7 @@ export default function EstudiantesPage() {
                           : e.target.value,
                       }))
                     }
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
                 <div>
@@ -1071,7 +1071,7 @@ export default function EstudiantesPage() {
                     type="text"
                     value={form.documentDescription}
                     onChange={(e) => setForm((prev) => ({ ...prev, documentDescription: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                   />
                 </div>
               </div>
@@ -1117,7 +1117,7 @@ export default function EstudiantesPage() {
                             required
                             value={item.address}
                             onChange={(e) => updateAddress(index, "address", e.target.value)}
-                            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 bg-white"
+                            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 bg-white"
                           />
                         </div>
 
@@ -1130,7 +1130,7 @@ export default function EstudiantesPage() {
                               required
                               value={item.latitude}
                               onChange={(e) => updateAddress(index, "latitude", e.target.value)}
-                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 bg-white"
+                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 bg-white"
                             />
                           </div>
                           <div>
@@ -1141,7 +1141,7 @@ export default function EstudiantesPage() {
                               required
                               value={item.longitude}
                               onChange={(e) => updateAddress(index, "longitude", e.target.value)}
-                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20 bg-white"
+                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20 bg-white"
                             />
                           </div>
                         </div>
@@ -1149,7 +1149,7 @@ export default function EstudiantesPage() {
                         <button
                           type="button"
                           onClick={() => openMapPicker(index)}
-                          className="inline-flex items-center gap-2 rounded-lg border border-[#0F2B4B]/20 bg-white px-3 py-2 text-xs font-semibold text-[#0F2B4B] hover:bg-[#0F2B4B]/5"
+                          className="inline-flex items-center gap-2 rounded-lg border border-[#003D7A]/20 bg-white px-3 py-2 text-xs font-semibold text-[#003D7A] hover:bg-[#003D7A]/5"
                         >
                           <span className="material-symbols-outlined text-[16px]">map</span>
                           Seleccionar coordenadas en mapa
@@ -1173,7 +1173,7 @@ export default function EstudiantesPage() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                  className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                 >
                   {submitLoading ? "Guardando..." : isEditMode ? "Actualizar" : "Guardar"}
                 </button>
@@ -1196,3 +1196,4 @@ export default function EstudiantesPage() {
     </div>
   );
 }
+

@@ -201,7 +201,7 @@ function showErrorDialog(message: string) {
     text: message,
     icon: "error",
     confirmButtonText: "Entendido",
-    confirmButtonColor: "#0F2B4B",
+    confirmButtonColor: "#003D7A",
     customClass: {
       popup: "rounded-2xl",
       title: "text-slate-800",
@@ -501,7 +501,7 @@ export default function UsuariosPage() {
           </div>
           <button
             onClick={openCreateModal}
-            className="bg-[#0F2B4B] hover:bg-[#163a63] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+            className="bg-[#003D7A] hover:bg-[#0066CC] text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px] cursor-pointer">add</span>
             Registrar Usuario
@@ -518,11 +518,11 @@ export default function UsuariosPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar por nombre, correo o tipo de usuario"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
             />
           </div>
           <select
-            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -588,7 +588,7 @@ export default function UsuariosPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openEditModal(user)}
-                          className="p-1.5 rounded-lg hover:bg-[#0F2B4B] hover:text-white text-slate-400 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg hover:bg-[#003D7A] hover:text-white text-slate-400 transition-colors cursor-pointer"
                           title="Editar"
                         >
                           <span className="material-symbols-outlined text-[16px]">edit</span>
@@ -649,7 +649,7 @@ export default function UsuariosPage() {
                       required
                       value={form.email}
                       onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
                   <div>
@@ -663,7 +663,7 @@ export default function UsuariosPage() {
                       value={form.password}
                       onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                       placeholder={isEditMode ? "Dejar en blanco para conservar" : "Mínimo 6 caracteres"}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     />
                   </div>
                 </div>
@@ -683,7 +683,7 @@ export default function UsuariosPage() {
                           pickupEnabled: value === "DRIVER" ? prev.pickupEnabled : false,
                         }));
                       }}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Seleccionar tipo...</option>
                       {USER_OPTIONS.map((option) => (
@@ -699,7 +699,7 @@ export default function UsuariosPage() {
                       required
                       value={form.personId}
                       onChange={(e) => setForm((prev) => ({ ...prev, personId: e.target.value }))}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
                     >
                       <option value="">Seleccionar persona...</option>
                       {personOptions.map((person) => (
@@ -722,7 +722,7 @@ export default function UsuariosPage() {
                         type="checkbox"
                         checked={form.pickupEnabled}
                         onChange={(e) => setForm((prev) => ({ ...prev, pickupEnabled: e.target.checked }))}
-                        className="size-4 rounded border-slate-300 text-[#0F2B4B] focus:ring-[#0F2B4B]/30"
+                        className="size-4 rounded border-slate-300 text-[#003D7A] focus:ring-[#003D7A]/30"
                       />
                       <span className="text-sm text-slate-700 font-medium">Pickup habilitado</span>
                     </label>
@@ -742,7 +742,7 @@ export default function UsuariosPage() {
                   <button
                     type="submit"
                     disabled={submitLoading}
-                    className="flex-1 py-2.5 bg-[#0F2B4B] hover:bg-[#163a63] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
+                    className="flex-1 py-2.5 bg-[#003D7A] hover:bg-[#0066CC] text-white rounded-lg text-sm font-semibold transition-colors shadow-md disabled:opacity-60"
                   >
                     {submitLoading ? "Guardando..." : isEditMode ? "Actualizar" : "Guardar"}
                   </button>
@@ -755,3 +755,4 @@ export default function UsuariosPage() {
     </ProtectedRoute>
   );
 }
+
