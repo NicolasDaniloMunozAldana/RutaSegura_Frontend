@@ -117,11 +117,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       }`}
     >
       <div className="p-6 flex items-center gap-3">
-        <div className="bg-[#0F2B4B] rounded-lg p-2 flex items-center justify-center text-white">
-          <span className="material-symbols-outlined">directions_bus</span>
-        </div>
+        <img src="/logo-villafontana.png" alt="Villa Fontana" className="h-10 w-10" />
         <div className="flex-1 min-w-0">
-          <h1 className="text-[#0F2B4B] font-bold text-xl leading-none">RutaSegura</h1>
+          <h1 className="text-[#003D7A] font-bold text-xl leading-none">RutaSegura</h1>
           <p className="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">
             Gimnasio Villa Fontana
           </p>
