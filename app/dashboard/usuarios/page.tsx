@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
 import {
+  AvailableGuardian,
   UpdateUserPayload,
   UserPayload,
   UserPerson,
@@ -13,12 +14,13 @@ import {
   usersAPI,
 } from "@/lib/api";
 
-type UserOption = "DRIVER" | "COORDINATOR" | "ADMIN";
+type UserOption = "DRIVER" | "COORDINATOR" | "ADMIN" | "GUARDIAN";
 
 type FormState = {
   email: string;
   password: string;
   personId: string;
+  guardianId: string;
   userOption: UserOption | "";
   pickupEnabled: boolean;
 };
@@ -26,8 +28,8 @@ type FormState = {
 const USER_OPTIONS: Array<{
   value: UserOption;
   label: string;
-  personType: "DRIVER" | "COORDINATOR";
-  roleName: "DRIVER" | "COORDINATOR" | "ADMIN";
+  personType: "DRIVER" | "COORDINATOR" | "GUARDIAN";
+  roleName: "DRIVER" | "COORDINATOR" | "ADMIN" | "GUARDIAN";
 }> = [
   {
     value: "DRIVER",
@@ -47,15 +49,33 @@ const USER_OPTIONS: Array<{
     personType: "COORDINATOR",
     roleName: "ADMIN",
   },
+  {
+    value: "GUARDIAN",
+    label: "Acudiente",
+    personType: "GUARDIAN",
+    roleName: "GUARDIAN",
+  },
 ];
 
 const initialForm: FormState = {
   email: "",
   password: "",
   personId: "",
+  guardianId: "",
   userOption: "",
   pickupEnabled: false,
 };
+
+function guardianName(guardian: AvailableGuardian): string {
+  return [
+    guardian.firstName,
+    guardian.middleName,
+    guardian.firstLastname,
+    guardian.secondLastname,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
 function personName(person: UserPerson): string {
   return [
@@ -103,6 +123,8 @@ function labelFromRoleName(roleName: string | null | undefined): string {
       return "Coordinador";
     case "ADMIN":
       return "Administrador";
+    case "GUARDIAN":
+      return "Acudiente";
     default:
       return "Sin tipo";
   }
@@ -117,6 +139,10 @@ function inferUserOptionFromRecord(user: UserRecord): UserOption {
 
   if (role === "DRIVER") {
     return "DRIVER";
+  }
+
+  if (role === "GUARDIAN") {
+    return "GUARDIAN";
   }
 
   return "COORDINATOR";
@@ -141,6 +167,17 @@ function createPayloadFromForm(
   form: FormState,
   roleId: number,
 ): UserPayload {
+  // Acudiente: se envía el Guardian; el backend crea/enlaza su persona de login.
+  if (form.userOption === "GUARDIAN") {
+    return {
+      email: form.email.trim(),
+      password: form.password,
+      guardianId: Number(form.guardianId),
+      roleId,
+      pickupEnabled: false,
+    };
+  }
+
   return {
     email: form.email.trim(),
     password: form.password,
@@ -230,6 +267,9 @@ export default function UsuariosPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [availablePersons, setAvailablePersons] = useState<UserPerson[]>([]);
+  const [availableGuardians, setAvailableGuardians] = useState<
+    AvailableGuardian[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -333,16 +373,20 @@ export default function UsuariosPage() {
     if (!token) return;
 
     try {
-      const [rolesResponse, personsResponse] = await Promise.all([
-        usersAPI.findRoles(token),
-        usersAPI.findAvailablePersons(token),
-      ]);
+      const [rolesResponse, personsResponse, guardiansResponse] =
+        await Promise.all([
+          usersAPI.findRoles(token),
+          usersAPI.findAvailablePersons(token),
+          usersAPI.findAvailableGuardians(token),
+        ]);
 
       setRoles(rolesResponse.data);
       setAvailablePersons(personsResponse.data);
+      setAvailableGuardians(guardiansResponse.data);
     } catch {
       setRoles([]);
       setAvailablePersons([]);
+      setAvailableGuardians([]);
     }
   }, [token]);
 
@@ -371,6 +415,7 @@ export default function UsuariosPage() {
       email: user.email,
       password: "",
       personId: String(user.person.id),
+      guardianId: "",
       userOption: option,
       pickupEnabled: option === "DRIVER" ? user.pickupEnabled : false,
     });
@@ -399,7 +444,14 @@ export default function UsuariosPage() {
         return;
       }
 
-      if (!form.personId) {
+      const isGuardianCreate = form.userOption === "GUARDIAN" && !isEditMode;
+
+      if (isGuardianCreate) {
+        if (!form.guardianId) {
+          setSubmitError("Selecciona un acudiente para continuar.");
+          return;
+        }
+      } else if (!form.personId) {
         setSubmitError("Selecciona una persona para continuar.");
         return;
       }
@@ -415,15 +467,17 @@ export default function UsuariosPage() {
         return;
       }
 
-      const selectedPerson = personOptions.find(
-        (person) => person.id === Number(form.personId),
-      );
+      if (!isGuardianCreate) {
+        const selectedPerson = personOptions.find(
+          (person) => person.id === Number(form.personId),
+        );
 
-      if (selectedOptionConfig && selectedPerson) {
-        const personType = (selectedPerson.personType ?? "").toUpperCase();
-        if (personType !== selectedOptionConfig.personType) {
-          setSubmitError("La persona seleccionada no corresponde al tipo de usuario elegido.");
-          return;
+        if (selectedOptionConfig && selectedPerson) {
+          const personType = (selectedPerson.personType ?? "").toUpperCase();
+          if (personType !== selectedOptionConfig.personType) {
+            setSubmitError("La persona seleccionada no corresponde al tipo de usuario elegido.");
+            return;
+          }
         }
       }
 
@@ -680,6 +734,7 @@ export default function UsuariosPage() {
                           ...prev,
                           userOption: value,
                           personId: "",
+                          guardianId: "",
                           pickupEnabled: value === "DRIVER" ? prev.pickupEnabled : false,
                         }));
                       }}
@@ -693,26 +748,52 @@ export default function UsuariosPage() {
                       ))}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Persona asociada</label>
-                    <select
-                      required
-                      value={form.personId}
-                      onChange={(e) => setForm((prev) => ({ ...prev, personId: e.target.value }))}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003D7A]/20"
-                    >
-                      <option value="">Seleccionar persona...</option>
-                      {personOptions.map((person) => (
-                        <option key={person.id} value={person.id}>
-                          {personName(person)}
-                          {person.email ? ` - ${person.email}` : ""}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="mt-1 text-[11px] text-slate-500">
-                      Se muestran solo personas disponibles para el tipo seleccionado.
-                    </p>
-                  </div>
+                  {form.userOption === "GUARDIAN" && !isEditMode ? (
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Acudiente</label>
+                      <select
+                        required
+                        value={form.guardianId}
+                        onChange={(e) =>
+                          setForm((prev) => ({ ...prev, guardianId: e.target.value }))
+                        }
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      >
+                        <option value="">Seleccionar acudiente...</option>
+                        {availableGuardians.map((guardian) => (
+                          <option key={guardian.id} value={guardian.id}>
+                            {guardianName(guardian)}
+                            {guardian.email ? ` - ${guardian.email}` : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-[11px] text-slate-500">
+                        Se muestran acudientes registrados que aún no tienen acceso.
+                        Se les creará automáticamente su perfil de acceso.
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">Persona asociada</label>
+                      <select
+                        required
+                        value={form.personId}
+                        onChange={(e) => setForm((prev) => ({ ...prev, personId: e.target.value }))}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
+                      >
+                        <option value="">Seleccionar persona...</option>
+                        {personOptions.map((person) => (
+                          <option key={person.id} value={person.id}>
+                            {personName(person)}
+                            {person.email ? ` - ${person.email}` : ""}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="mt-1 text-[11px] text-slate-500">
+                        Se muestran solo personas disponibles para el tipo seleccionado.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {requiresPickup(form.userOption) && (

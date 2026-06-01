@@ -69,6 +69,9 @@ export interface TripRecord {
   endedAt: string | null;
   observations: string | null;
   createdByUserId: number | null;
+  currentLatitude: string | null;
+  currentLongitude: string | null;
+  locationUpdatedAt: string | null;
   createdAt: string;
   route: TripRouteRef;
   vehicle: TripVehicleRef;
@@ -98,6 +101,20 @@ export interface SubmitChecklistPayload {
   latitude: number;
   longitude: number;
   generalObservations?: string;
+}
+
+export interface GuardianActiveTrip {
+  tripId: number;
+  routeId: number;
+  routeName: string;
+  vehiclePlate: string;
+  vehicleLabel: string;
+  driverName: string;
+  startedAt: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  locationUpdatedAt: string | null;
+  children: string[];
 }
 
 export interface ChecklistTemplateItem {

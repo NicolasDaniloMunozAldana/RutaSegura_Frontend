@@ -1,6 +1,7 @@
 import { apiCall } from "../core/client";
 import type { ApiEnvelope } from "../core/client";
 import type {
+  AvailableGuardian,
   UpdateUserPayload,
   UserPayload,
   UserPerson,
@@ -58,4 +59,9 @@ export const usersAPI = {
         token,
       },
     ) as Promise<ApiEnvelope<UserPerson[]>>,
+
+  findAvailableGuardians: (token: string) =>
+    apiCall("/users/catalog/available-guardians", {
+      token,
+    }) as Promise<ApiEnvelope<AvailableGuardian[]>>,
 };

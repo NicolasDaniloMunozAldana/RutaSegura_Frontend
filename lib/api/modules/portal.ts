@@ -19,6 +19,12 @@ export const driverPortalAPI = {
     apiCall(`/driver/routes/${id}/google-maps`, { token }) as Promise<
       ApiEnvelope<{ url: string }>
     >,
+
+  // URL en modo navegación (voz/3D) para iniciar el recorrido.
+  getNavigationUrl: (id: number, token: string) =>
+    apiCall(`/driver/routes/${id}/navigation`, { token }) as Promise<
+      ApiEnvelope<{ url: string }>
+    >,
 };
 
 // Portal del acudiente: rutas de sus hijos.

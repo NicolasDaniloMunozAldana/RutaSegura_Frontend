@@ -24,10 +24,22 @@ export interface UserRecord {
   person: UserPerson;
 }
 
+export interface AvailableGuardian {
+  id: number;
+  firstName: string;
+  middleName: string | null;
+  firstLastname: string;
+  secondLastname: string | null;
+  email: string | null;
+}
+
 export interface UserPayload {
   email: string;
   password: string;
-  personId: number;
+  // Para conductor/coordinador/admin.
+  personId?: number;
+  // Para el rol acudiente.
+  guardianId?: number;
   roleId: number;
   pickupEnabled?: boolean;
 }

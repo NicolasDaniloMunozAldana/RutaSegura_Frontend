@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
-import { guardianPortalAPI } from "@/lib/api";
-import type { GuardianChild } from "@/lib/api";
+import { guardianPortalAPI, guardianTripsAPI } from "@/lib/api";
+import type { GuardianActiveTrip, GuardianChild } from "@/lib/api";
 import { GUARDIAN_ROLES } from "@/lib/roles";
+import LiveTrackingModal from "./LiveTrackingModal";
 
 function formatTime(value: string | null): string {
   if (!value) return "—";
@@ -33,6 +34,8 @@ function fullName(child: GuardianChild): string {
 function RutasHijoContent() {
   const { token } = useAuth();
   const [children, setChildren] = useState<GuardianChild[]>([]);
+  const [activeTrips, setActiveTrips] = useState<GuardianActiveTrip[]>([]);
+  const [trackingTripId, setTrackingTripId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -54,9 +57,33 @@ function RutasHijoContent() {
     }
   }, [token]);
 
+  const loadActiveTrips = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await guardianTripsAPI.findActive(token);
+      setActiveTrips(response.data);
+    } catch {
+      setActiveTrips([]);
+    }
+  }, [token]);
+
   useEffect(() => {
     void loadChildren();
   }, [loadChildren]);
+
+  // Revisa periódicamente si hay buses en curso para mostrar "Ver en vivo".
+  useEffect(() => {
+    void loadActiveTrips();
+    const interval = setInterval(() => void loadActiveTrips(), 20000);
+    return () => clearInterval(interval);
+  }, [loadActiveTrips]);
+
+  // routeId -> viaje en curso (para mostrar el botón en la ruta correspondiente).
+  const activeTripByRoute = useMemo(() => {
+    const map = new Map<number, GuardianActiveTrip>();
+    for (const trip of activeTrips) map.set(trip.routeId, trip);
+    return map;
+  }, [activeTrips]);
 
   return (
     <div className="p-6 md:p-8 max-w-4xl mx-auto">
@@ -122,9 +149,26 @@ function RutasHijoContent() {
                           {route.destination?.name ?? "Sin destino"}
                         </p>
                       </div>
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
-                        {route.status ?? "—"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {activeTripByRoute.has(route.id) && (
+                          <button
+                            onClick={() =>
+                              setTrackingTripId(
+                                activeTripByRoute.get(route.id)!.tripId,
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors animate-pulse"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">
+                              location_on
+                            </span>
+                            Ver en vivo
+                          </button>
+                        )}
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">
+                          {route.status ?? "—"}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4 text-sm">
@@ -180,6 +224,14 @@ function RutasHijoContent() {
           </div>
         ))}
       </div>
+
+      {trackingTripId !== null && (
+        <LiveTrackingModal
+          tripId={trackingTripId}
+          token={token}
+          onClose={() => setTrackingTripId(null)}
+        />
+      )}
     </div>
   );
 }

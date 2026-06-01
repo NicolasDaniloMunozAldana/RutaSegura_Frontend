@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
-import { driverTripsAPI } from "@/lib/api";
+import { driverPortalAPI, driverTripsAPI } from "@/lib/api";
 import type { TripRecord } from "@/lib/api";
 import { DRIVER_ROLES } from "@/lib/roles";
+import { useTripLocationSharing } from "@/lib/location/useTripLocationSharing";
 import {
   TRIP_STATUS_OPTIONS,
   formatTripDate,
@@ -47,6 +48,32 @@ function MisViajesContent() {
     return trips.filter((t) => (t.status ?? "").toUpperCase() === statusFilter);
   }, [trips, statusFilter]);
 
+  // Viaje en curso: comparte la ubicación del bus mientras dure.
+  const activeTrip = useMemo(
+    () => trips.find((t) => (t.status ?? "").toUpperCase() === "IN_PROGRESS") ?? null,
+    [trips],
+  );
+  const { status: sharingStatus } = useTripLocationSharing(
+    activeTrip?.id ?? null,
+    Boolean(activeTrip),
+    token,
+  );
+
+  const openNavigation = useCallback(
+    async (routeId: number) => {
+      if (!token) return;
+      try {
+        const res = await driverPortalAPI.getNavigationUrl(routeId, token);
+        window.open(res.data.url, "_blank", "noopener,noreferrer");
+      } catch (err) {
+        showErrorDialog(
+          err instanceof Error ? err.message : "No se pudo abrir la navegación",
+        );
+      }
+    },
+    [token],
+  );
+
   const startTrip = async (trip: TripRecord) => {
     if (!token) return;
     const ok = await confirmDialog({
@@ -59,7 +86,9 @@ function MisViajesContent() {
     setBusyId(trip.id);
     try {
       await driverTripsAPI.start(trip.id, token);
-      showSuccessDialog("Viaje iniciado.");
+      showSuccessDialog("Viaje iniciado. Abriendo navegación…");
+      // Abre Google Maps en modo navegación (voz/3D).
+      await openNavigation(trip.route.id);
       await load();
     } catch (err) {
       showErrorDialog(err instanceof Error ? err.message : "No se pudo iniciar el viaje");
@@ -110,6 +139,19 @@ function MisViajesContent() {
           ))}
         </select>
       </div>
+
+      {activeTrip && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm text-indigo-700">
+          <span
+            className={`size-2 rounded-full ${
+              sharingStatus === "sharing" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+            }`}
+          />
+          {sharingStatus === "sharing"
+            ? "Compartiendo la ubicación del bus con los acudientes."
+            : "Activando el compartir de ubicación… permite el acceso a tu ubicación."}
+        </div>
+      )}
 
       {loading && <div className="text-slate-500 text-sm">Cargando viajes…</div>}
 
@@ -189,14 +231,23 @@ function MisViajesContent() {
                 )}
 
                 {status === "IN_PROGRESS" && (
-                  <button
-                    onClick={() => void finishTrip(trip)}
-                    disabled={busyId === trip.id}
-                    className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-60"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">flag</span>
-                    {busyId === trip.id ? "Finalizando…" : "Finalizar viaje"}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => void openNavigation(trip.route.id)}
+                      className="inline-flex items-center gap-2 bg-[#0F2B4B] hover:bg-[#163a63] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">navigation</span>
+                      Abrir navegación
+                    </button>
+                    <button
+                      onClick={() => void finishTrip(trip)}
+                      disabled={busyId === trip.id}
+                      className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors disabled:opacity-60"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">flag</span>
+                      {busyId === trip.id ? "Finalizando…" : "Finalizar viaje"}
+                    </button>
+                  </>
                 )}
 
                 {(status === "COMPLETED" || status === "CANCELLED") && (

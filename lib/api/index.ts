@@ -13,6 +13,7 @@ export type {
   ChecklistRecord,
   ChecklistTemplateItem,
   CreateTripPayload,
+  GuardianActiveTrip,
   SubmitChecklistPayload,
   TripDriverRef,
   TripQueryParams,
@@ -61,6 +62,7 @@ export type {
   VehicleRecord,
 } from "./types/vehicles";
 export type {
+  AvailableGuardian,
   UpdateUserPayload,
   UserPayload,
   UserPerson,
@@ -99,7 +101,12 @@ export { authAPI } from "./modules/auth";
 export { driverPortalAPI, guardianPortalAPI } from "./modules/portal";
 export { documentManagementAPI } from "./modules/document-management";
 export { filesAPI } from "./modules/files";
-export { tripsAPI, driverTripsAPI, checklistAPI } from "./modules/trips";
+export {
+  tripsAPI,
+  driverTripsAPI,
+  guardianTripsAPI,
+  checklistAPI,
+} from "./modules/trips";
 export { notificationsAPI } from "./modules/notifications";
 export { studentsAPI } from "./modules/students";
 export { driversAPI, driverProfileAPI } from "./modules/drivers";

@@ -3,10 +3,18 @@ import type { ApiEnvelope } from "../core/client";
 import type {
   ChecklistTemplateItem,
   CreateTripPayload,
+  GuardianActiveTrip,
   SubmitChecklistPayload,
   TripQueryParams,
   TripRecord,
 } from "../types/trips";
+
+export const guardianTripsAPI = {
+  findActive: (token: string) =>
+    apiCall("/guardian/trips/active", { token }) as Promise<
+      ApiEnvelope<GuardianActiveTrip[]>
+    >,
+};
 
 export const checklistAPI = {
   getTemplate: (token: string) =>
@@ -94,6 +102,17 @@ export const driverTripsAPI = {
       method: "PATCH",
       token,
     }) as Promise<ApiEnvelope<TripRecord>>,
+
+  updateLocation: (
+    id: number,
+    coords: { latitude: number; longitude: number },
+    token: string,
+  ) =>
+    apiCall(`/driver/trips/${id}/location`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(coords),
+    }) as Promise<ApiEnvelope<{ latitude: number; longitude: number }>>,
 
   finish: (id: number, observations: string | undefined, token: string) =>
     apiCall(`/driver/trips/${id}/finish`, {
