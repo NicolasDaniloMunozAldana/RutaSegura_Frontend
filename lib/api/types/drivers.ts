@@ -11,6 +11,9 @@ export interface DriverDocumentLink {
     documentType: string | DriverDocumentTypeRecord;
     documentNumber: string;
     description: string | null;
+    issueDate: string | null;
+    expiryDate: string | null;
+    fileUrl: string | null;
     status: string | null;
   };
 }
@@ -40,6 +43,15 @@ export interface DriverRecord {
   personDocumentLinks: DriverDocumentLink[];
 }
 
+export interface DriverLicensePayload {
+  documentNumber: string;
+  // Fecha de expedición; el vencimiento se calcula a +3 años en el backend.
+  issueDate?: string;
+  expiryDate?: string;
+  fileKey?: string;
+  description?: string;
+}
+
 export interface DriverPayload {
   firstName: string;
   middleName?: string;
@@ -53,5 +65,10 @@ export interface DriverPayload {
     description?: string;
     documentRole?: string;
   };
+  license?: DriverLicensePayload;
   status?: string;
 }
+
+// Roles de documento usados para distinguir cédula de licencia.
+export const DRIVER_LICENSE_ROLE = "DRIVER_LICENSE";
+export const DRIVER_ID_ROLE = "DRIVER_ID";

@@ -3,6 +3,9 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import { useAuth } from "@/context/AuthContext";
+import FileUpload from "@/components/FileUpload";
+import SecureFileLink from "@/components/SecureFileLink";
+import SecureImage from "@/components/SecureImage";
 import {
   UpdateVehiclePayload,
   VehicleDocumentPayload,
@@ -403,7 +406,6 @@ export default function VehiculosPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewVehicle, setViewVehicle] = useState<VehicleRecord | null>(null);
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
   const filteredVehicles = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -473,19 +475,11 @@ export default function VehiculosPage() {
 
   function openViewModal(vehicle: VehicleRecord) {
     setViewVehicle(vehicle);
-    setImageErrors({});
     setIsViewModalOpen(true);
   }
 
   function closeViewModal() {
     setIsViewModalOpen(false);
-  }
-
-  function markImageAsError(key: string) {
-    setImageErrors((prev) => ({
-      ...prev,
-      [key]: true,
-    }));
   }
 
   function closeModal() {
@@ -843,9 +837,6 @@ export default function VehiculosPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {DOCUMENT_CONFIG.map((documentConfig) => {
                   const document = getDocumentByField(viewVehicle, documentConfig.key);
-                  const imageKey = `${viewVehicle.plate}-${documentConfig.key}`;
-                  const hasImage = Boolean(document?.fileUrl && isImageUrl(document.fileUrl));
-                  const hasImageError = imageErrors[imageKey];
 
                   return (
                     <div
@@ -888,31 +879,26 @@ export default function VehiculosPage() {
 
                       {document?.fileUrl ? (
                         <div className="space-y-2">
-                          {hasImage && !hasImageError ? (
-                            <img
-                              src={document.fileUrl}
+                          {isImageUrl(document.fileUrl) ? (
+                            <SecureImage
+                              fileKey={document.fileUrl}
+                              token={token}
                               alt={`Imagen ${documentConfig.label} - ${viewVehicle.plate}`}
-                              className="w-full h-48 rounded-xl border border-slate-200 object-cover bg-white"
-                              onError={() => markImageAsError(imageKey)}
                             />
                           ) : (
                             <div className="w-full h-48 rounded-xl border border-dashed border-slate-300 bg-white flex items-center justify-center px-4 text-center text-xs font-medium text-slate-500">
-                              No se pudo mostrar una imagen previa para este documento.
+                              Documento cargado (PDF). Usa “Abrir archivo” para verlo.
                             </div>
                           )}
-                          <a
-                            href={document.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-sm font-semibold text-[#0F2B4B] hover:underline"
-                          >
-                            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-                            Abrir archivo
-                          </a>
+                          <SecureFileLink
+                            fileKey={document.fileUrl}
+                            token={token}
+                            label="Abrir archivo"
+                          />
                         </div>
                       ) : (
                         <div className="w-full h-48 rounded-xl border border-dashed border-slate-300 bg-white flex items-center justify-center px-4 text-center text-xs font-medium text-slate-500">
-                          Este documento no tiene imagen cargada.
+                          Este documento no tiene archivo cargado.
                         </div>
                       )}
                     </div>
@@ -1112,17 +1098,18 @@ export default function VehiculosPage() {
                           )}
 
                           <div className="md:col-span-2">
-                            <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wide">
-                              URL del Archivo
-                            </label>
-                            <input
-                              type="text"
-                              value={doc.fileUrl}
-                              onChange={(e) =>
-                                updateDocumentField(documentConfig.key, "fileUrl", e.target.value)
+                            <FileUpload
+                              label="Archivo del documento"
+                              folder="vehicle-documents"
+                              token={token}
+                              value={doc.fileUrl || null}
+                              onChange={(key) =>
+                                updateDocumentField(
+                                  documentConfig.key,
+                                  "fileUrl",
+                                  key ?? "",
+                                )
                               }
-                              placeholder="https://..."
-                              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F2B4B]/20"
                             />
                           </div>
                         </div>

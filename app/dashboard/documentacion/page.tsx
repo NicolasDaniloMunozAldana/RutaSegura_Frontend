@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import SecureFileLink from "@/components/SecureFileLink";
 import {
   PersonDocumentRecord,
   VehicleDocumentRecord,
@@ -496,12 +497,13 @@ export default function DocumentacionPage() {
                   <th className="px-4 py-3 font-semibold">Numero</th>
                   <th className="px-4 py-3 font-semibold">Vencimiento</th>
                   <th className="px-4 py-3 font-semibold">Estado</th>
+                  <th className="px-4 py-3 font-semibold">Archivo</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-5 text-center text-slate-500">
+                    <td colSpan={6} className="px-4 py-5 text-center text-slate-500">
                       Cargando documentos...
                     </td>
                   </tr>
@@ -509,7 +511,7 @@ export default function DocumentacionPage() {
 
                 {!loading && driverDocRows.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-5 text-center text-slate-500">
+                    <td colSpan={6} className="px-4 py-5 text-center text-slate-500">
                       No hay documentos de conductores.
                     </td>
                   </tr>
@@ -542,6 +544,13 @@ export default function DocumentacionPage() {
                             : "N/A"}
                         </td>
                         <td className="px-4 py-3">{documentBadge(status)}</td>
+                        <td className="px-4 py-3">
+                          <SecureFileLink
+                            fileKey={row.doc.fileUrl}
+                            token={token}
+                            label="Ver"
+                          />
+                        </td>
                       </tr>
                     );
                   })}

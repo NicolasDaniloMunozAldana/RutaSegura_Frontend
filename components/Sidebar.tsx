@@ -1,9 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { isDriver, isGuardian, normalizeRole } from "@/lib/roles";
+import { tripsAPI } from "@/lib/api";
+import { isDriver, isGuardian, isManager, normalizeRole } from "@/lib/roles";
 
 type MenuItem = { label: string; href: string; icon: string };
 
@@ -16,11 +18,13 @@ interface SidebarProps {
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout, user } = useAuth();
+  const { logout, user, token } = useAuth();
   const userRole = normalizeRole(user?.role);
 
   const driverMenu: MenuItem[] = [
     { label: "Mis Rutas", href: "/dashboard/mis-rutas", icon: "route" },
+    { label: "Mis Viajes", href: "/dashboard/mis-viajes", icon: "local_shipping" },
+    { label: "Mi Licencia", href: "/dashboard/mi-licencia", icon: "badge" },
   ];
 
   const guardianMenu: MenuItem[] = [
@@ -46,6 +50,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       icon: "directions_bus",
     },
     { label: "Rutas", href: "/dashboard/rutas", icon: "route" },
+    { label: "Viajes", href: "/dashboard/viajes", icon: "local_shipping" },
     {
       label: "Documentación",
       href: "/dashboard/documentacion",
@@ -72,6 +77,25 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     : isGuardian(userRole)
       ? guardianMenu
       : managerMenu;
+
+  // Conteo de viajes pendientes de revisión (solo gestores) para el badge.
+  const [pendingReview, setPendingReview] = useState(0);
+
+  const loadPendingReview = useCallback(async () => {
+    if (!token || !isManager(userRole)) return;
+    try {
+      const res = await tripsAPI.findAll(token, { status: "PENDING_REVIEW" });
+      setPendingReview(res.data.length);
+    } catch {
+      setPendingReview(0);
+    }
+  }, [token, userRole]);
+
+  useEffect(() => {
+    void loadPendingReview();
+    const interval = setInterval(() => void loadPendingReview(), 60000);
+    return () => clearInterval(interval);
+  }, [loadPendingReview]);
 
   const handleLogout = () => {
     onClose?.();
@@ -124,7 +148,12 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-            <span className="text-sm">{item.label}</span>
+            <span className="text-sm flex-1">{item.label}</span>
+            {item.href === "/dashboard/viajes" && pendingReview > 0 && (
+              <span className="ml-auto bg-red-500 text-white text-[10px] font-bold min-w-5 h-5 px-1.5 flex items-center justify-center rounded-full">
+                {pendingReview > 99 ? "99+" : pendingReview}
+              </span>
+            )}
           </Link>
         ))}
       </nav>

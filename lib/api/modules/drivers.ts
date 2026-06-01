@@ -1,6 +1,10 @@
 import { apiCall } from "../core/client";
 import type { ApiEnvelope } from "../core/client";
-import type { DriverPayload, DriverRecord } from "../types/drivers";
+import type {
+  DriverLicensePayload,
+  DriverPayload,
+  DriverRecord,
+} from "../types/drivers";
 
 export const driversAPI = {
   findAll: (token: string, query?: string) =>
@@ -38,5 +42,28 @@ export const driversAPI = {
       method: "PATCH",
       token,
       body: JSON.stringify({ status: "ACTIVE" }),
+    }) as Promise<ApiEnvelope<DriverRecord>>,
+
+  // Sube/reemplaza la licencia de un conductor (admin/coordinador).
+  upsertLicense: (id: number, payload: DriverLicensePayload, token: string) =>
+    apiCall(`/drivers/${id}/license`, {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(payload),
+    }) as Promise<ApiEnvelope<DriverRecord>>,
+};
+
+// Portal del conductor: su propio perfil y su licencia.
+export const driverProfileAPI = {
+  getMyProfile: (token: string) =>
+    apiCall("/driver/profile", { token }) as Promise<
+      ApiEnvelope<DriverRecord>
+    >,
+
+  upsertMyLicense: (payload: DriverLicensePayload, token: string) =>
+    apiCall("/driver/profile/license", {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(payload),
     }) as Promise<ApiEnvelope<DriverRecord>>,
 };
